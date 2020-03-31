@@ -1,0 +1,10 @@
+.vscode/
+*.swp
+*.pyc
+log/*
+split*
+__pycache__
+dataset/
+rosbag_dataset/
+*.ckpt
+.idea/
