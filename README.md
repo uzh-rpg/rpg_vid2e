@@ -7,7 +7,7 @@
 </p>
 
 This repository contains code that implements 
-video to events conversion as described in Gehrig et al. CVPR'20. The paper can be found [here](http://rpg.ifi.uzh.ch/docs/arXiv19_Gehrig_vid.pdf)
+video to events conversion as described in Gehrig et al. CVPR'20. The paper can be found [here](http://rpg.ifi.uzh.ch/docs/CVPR20_Gehrig.pdf)
 
 If you use this code in an academic context, please cite the following work:
 
