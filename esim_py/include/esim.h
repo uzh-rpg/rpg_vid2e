@@ -9,7 +9,7 @@
 
 struct Event
 {
-  Event(int x, int y, double t, bool polarity)
+  Event(int x, int y, double t, int polarity)
   : x_(x), y_(y), t_(t), polarity_(polarity)
   {}
 
@@ -20,7 +20,7 @@ struct Event
 
   int x_, y_;
   double t_;
-  bool polarity_;
+  int polarity_;
 };
 
 /*
@@ -70,7 +70,7 @@ private:
         events(i,0) = event.x_;
         events(i,1) = event.y_;
         events(i,2) = event.t_;
-        events(i,3) = event.polarity_ ? 1 : -1;
+        events(i,3) = event.polarity_;
     }
     return events;
   }
