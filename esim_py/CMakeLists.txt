@@ -3,12 +3,13 @@ project(esim_py)
 
 add_subdirectory(pybind11)
 
-include_directories(include include/eigen3.3.7)
-
 set(CMAKE_POSITION_INDEPENDENT_CODE ON) 
 
-find_package( OpenCV REQUIRED )
+find_package(OpenCV REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
+
+include_directories(include ${EIGEN3_INCLUDE_DIR})
 
 add_library(libesim STATIC src/esim.cpp)
 
