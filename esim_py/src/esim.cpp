@@ -41,7 +41,7 @@ Eigen::MatrixXd EventSimulator::generateFromVideo(std::string video_path, std::s
 
     while (cap.read(img))
     {
-        cv::cvtColor(img, img, CV_BGR2GRAY);
+        cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
 
         img.convertTo(img, CV_32F, 1.0/255);
 
@@ -78,7 +78,7 @@ Eigen::MatrixXd EventSimulator::generateFromStampedImageSequence(std::vector<std
             throw std::runtime_error("Timestamps must be sorted in ascending order.");
 
         img = cv::imread(image_paths[i]);
-        cv::cvtColor(img, img, CV_BGR2GRAY);
+        cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
 
         if(img.empty()) 
             throw std::runtime_error("unable to open the image " + image_paths[i]);
@@ -120,7 +120,7 @@ Eigen::MatrixXd EventSimulator::generateFromFolder(std::string image_folder, std
     for (const std::string& file : image_files)
     {
         img = cv::imread(file);
-        cv::cvtColor(img, img, CV_BGR2GRAY);
+        cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
 
         if(img.empty()) 
             throw std::runtime_error("unable to open the image " + file);

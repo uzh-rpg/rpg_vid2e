@@ -39,10 +39,7 @@ cuda_version=10.1
 conda create -y -n vid2e python=3.7
 conda activate vid2e
 conda install -y pytorch torchvision cudatoolkit=$cuda_version -c pytorch
-conda install -y -c conda-forge opencv
-conda install -y -c conda-forge tqdm
-conda install -y -c conda-forge scikit-video
-conda install -y -c conda-forge eigen
+conda install -y -c conda-forge opencv tqm scikit-video eigen boost boost-cpp
 ```
 
 Build the python bindings for ESIM
