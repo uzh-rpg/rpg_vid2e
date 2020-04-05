@@ -42,22 +42,14 @@ conda install -y pytorch torchvision cudatoolkit=$cuda_version -c pytorch
 conda install -y -c conda-forge opencv
 conda install -y -c conda-forge tqdm
 conda install -y -c conda-forge scikit-video
-```
-
-Download Eigen headers
-
-```bash
-cd rpg_vid2e/
-wget http://bitbucket.org/eigen/eigen/get/3.3.7.tar.bz2
-tar -xjf 3.3.7.tar.bz2
-rm 3.3.7.tar.bz2
-mv eigen-eigen-323c052e1731 esim_py/include/eigen3.3.7
+conda install -y -c conda-forge eigen
 ```
 
 Build the python bindings for ESIM
 
 ```bash
-pip install esim_py
+cd esim_py
+pip install .
 ```
 
 ## Adaptive Upsampling
