@@ -11,7 +11,7 @@ video to events conversion as described in Gehrig et al. CVPR'20. The paper can 
 
 If you use this code in an academic context, please cite the following work:
 
-[Daniel Gehrig](https://danielgehrig18.github.io/), Mathias Gehrig, Javier Hidalgo-Carrió, [Davide Scaramuzza](http://rpg.ifi.uzh.ch/people_scaramuzza.html), "Video to Events: Recycling Video Datasets for Event Cameras", The International Conference on Computer Vision and Pattern Recognition (CVPR), 2020
+[Daniel Gehrig](https://danielgehrig18.github.io/), Mathias Gehrig, Javier Hidalgo-Carrió, [Davide Scaramuzza](http://rpg.ifi.uzh.ch/people_scaramuzza.html), "Video to Events: Recycling Video Datasets for Event Cameras", The Conference on Computer Vision and Pattern Recognition (CVPR), 2020
 
 ```bibtex
 @InProceedings{Gehrig_2020_CVPR,
@@ -39,7 +39,7 @@ cuda_version=10.1
 conda create -y -n vid2e python=3.7
 conda activate vid2e
 conda install -y pytorch torchvision cudatoolkit=$cuda_version -c pytorch
-conda install -y -c conda-forge opencv tqm scikit-video eigen boost boost-cpp
+conda install -y -c conda-forge opencv tqm scikit-video eigen boost boost-cpp pybind11
 ```
 
 Build the python bindings for ESIM
