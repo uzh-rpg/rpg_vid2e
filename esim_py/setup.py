@@ -42,7 +42,6 @@ class CMakeBuild(build_ext):
         build_args += ['--', '-j']
 
         env = os.environ.copy()
-        env['CMAKE_CXX_STANDARD'] = '11'
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
                                                               self.distribution.get_version())
         if not os.path.exists(self.build_temp):
