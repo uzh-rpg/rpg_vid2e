@@ -7,6 +7,7 @@ find_package(Eigen3 REQUIRED NO_MODULE)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_CXX_STANDARD 11)
 
 include_directories(include ${EIGEN3_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
