@@ -5,7 +5,7 @@ from typing import Union
 from .const import fps_filename, imgs_dirname, video_formats
 from .dataset import Sequence, ImageSequence, VideoSequence
 
-def is_video_file(filepath: str):
+def is_video_file(filepath: str) -> bool:
     return Path(filepath).suffix.lower() in video_formats
 
 def get_fps_file(dirpath: str) -> Union[None, str]:
@@ -28,7 +28,7 @@ def get_video_file(dirpath: str) -> Union[None, str]:
     filepath = os.path.join(dirpath, filenames[0])
     return filepath
 
-def fps_from_file(fps_file) -> Union[None, int]:
+def fps_from_file(fps_file) -> float:
     assert os.path.isfile(fps_file)
     with open(fps_file, 'r') as f:
         fps = float(f.readline().strip())
