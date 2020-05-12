@@ -15,4 +15,4 @@ add_library(libesim STATIC src/esim.cpp)
 
 pybind11_add_module(esim_py src/bindings.cpp)
 
-target_link_libraries(esim_py PRIVATE libesim ${OpenCV_LIBS} ${Boost_FILESYSTEM_LIBRARY} ${BOOST_SYSTEM_LIBRARY} Eigen3::Eigen pybind11::embed)
+target_link_libraries(esim_py PRIVATE libesim ${OpenCV_LIBS} ${Boost_FILESYSTEM_LIBRARY} ${BOOST_SYSTEM_LIBRARY} Boost::filesystem Boost::system Eigen3::Eigen pybind11::embed)
