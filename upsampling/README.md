@@ -77,9 +77,8 @@ frame_rate=25
 img_dirpath="example/original/seq0/imgs"
 img_suffix=".png"
 output_file="video.mp4"
-ffmpeg -framerate $frame_rate -pattern_type glob -i "$img_dirpath/*$img_suffix" -c:v libx264 -crf 0 $output_file
+ffmpeg -framerate $frame_rate -pattern_type glob -i "$img_dirpath/*$img_suffix" -c:v libx265 -x265-params lossless=1 $output_file
 ```
-**Note** that a *crf* value of higher than 0 will apply lossy compression and alter the event generation.
 
 ### Generating Images from a Video File
 If you want to convert a video file to a sequence of images:
