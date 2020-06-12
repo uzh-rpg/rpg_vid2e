@@ -72,9 +72,9 @@ Eigen::MatrixXd EventSimulator::generateFromStampedImageSequence(std::vector<std
 
     std::vector<Event> events_vec;
 
-    for (int i=0; i<timestamps.size()-1; i++)
+    for (int i=0; i<timestamps.size(); i++)
     {
-        if (timestamps[i+1]<timestamps[i])
+        if ((i < timestamps.size()-1)  && timestamps[i+1]<timestamps[i]) 
             throw std::runtime_error("Timestamps must be sorted in ascending order.");
 
         img = cv::imread(image_paths[i]);
