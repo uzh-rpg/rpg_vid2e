@@ -10,12 +10,26 @@ from setuptools.command.build_ext import build_ext
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
+        """
+        Initialize a directory.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            sourcedir: (str): write your description
+        """
         super().__init__(name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
 
 
 class CMakeBuild(build_ext):
     def run(self):
+        """
+        Run the build_version command.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             out = subprocess.check_output(['cmake', '--version'])
         except OSError:
@@ -31,6 +45,13 @@ class CMakeBuild(build_ext):
             self.build_extension(ext)
 
     def build_extension(self, ext):
+        """
+        Build the extension.
+
+        Args:
+            self: (todo): write your description
+            ext: (str): write your description
+        """
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable]
