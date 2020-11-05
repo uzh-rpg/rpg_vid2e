@@ -6,6 +6,13 @@ import os
 
 
 def viz_events(events, resolution):
+    """
+    Viz events
+
+    Args:
+        events: (array): write your description
+        resolution: (todo): write your description
+    """
     pos_events = events[events[:,-1]==1]
     neg_events = events[events[:,-1]==-1]
 

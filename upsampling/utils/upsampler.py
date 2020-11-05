@@ -20,6 +20,15 @@ class Upsampler:
     _timestamps_filename = 'timestamps.txt'
 
     def __init__(self, input_dir: str, output_dir: str, device: str):
+        """
+        Initialize the device.
+
+        Args:
+            self: (todo): write your description
+            input_dir: (str): write your description
+            output_dir: (str): write your description
+            device: (todo): write your description
+        """
         assert os.path.isdir(input_dir), 'The input directory must exist'
         assert not os.path.exists(output_dir), 'The output directory must not exist'
 
@@ -37,6 +46,12 @@ class Upsampler:
         self.TP = transforms.Compose([revNormalize])
 
     def _load_net_from_checkpoint(self):
+        """
+        Loads the flow from file.
+
+        Args:
+            self: (todo): write your description
+        """
         ckpt_file = 'checkpoint/SuperSloMo.ckpt'
 
         if not os.path.isfile(ckpt_file):
@@ -63,6 +78,14 @@ class Upsampler:
         self.flowComp.load_state_dict(checkpoint['state_dictFC'])
 
     def get_flowBackWarp_module(self, width: int, height: int):
+        """
+        Return flowBack flow
+
+        Args:
+            self: (todo): write your description
+            width: (int): write your description
+            height: (int): write your description
+        """
         module = self.flowBackWarp_dict.get((width, height))
         if module is None:
             module  = backWarp(width, height, self.device)
@@ -72,6 +95,12 @@ class Upsampler:
         return module
 
     def upsample(self):
+        """
+        Upsample all files to disk.
+
+        Args:
+            self: (todo): write your description
+        """
         sequence_counter = 0
         for src_absdirpath, dirnames, filenames in os.walk(self.src_dir):
             sequence = get_sequence_or_none(src_absdirpath)
@@ -85,6 +114,15 @@ class Upsampler:
             self.upsample_sequence(sequence, dest_imgs_dir, dest_timestamps_filepath)
 
     def upsample_sequence(self, sequence: Sequence, dest_imgs_dir: str, dest_timestamps_filepath: str):
+        """
+        Todo : param sequence and sequence.
+
+        Args:
+            self: (todo): write your description
+            sequence: (todo): write your description
+            dest_imgs_dir: (str): write your description
+            dest_timestamps_filepath: (str): write your description
+        """
         os.makedirs(dest_imgs_dir, exist_ok=True)
         timestamps_list = list()
 
@@ -121,13 +159,38 @@ class Upsampler:
         self._write_timestamps(timestamps_list, dest_timestamps_filepath)
 
     def _prepare_output_dir(self, src_dir: str, dest_dir: str):
+        """
+        Prepares the output_dir to dest_dir.
+
+        Args:
+            self: (todo): write your description
+            src_dir: (str): write your description
+            dest_dir: (str): write your description
+        """
         # Copy directory structure.
         def ignore_files(directory, files):
+            """
+            Check if a directory recursively recursively.
+
+            Args:
+                directory: (str): write your description
+                files: (list): write your description
+            """
             return [f for f in files if os.path.isfile(os.path.join(directory, f))]
         shutil.copytree(src_dir, dest_dir, ignore=ignore_files)
 
     @staticmethod
     def _write_img(img: np.ndarray, idx: int, imgs_dir: str):
+        """
+        Write an image to disk.
+
+        Args:
+            img: (array): write your description
+            np: (todo): write your description
+            ndarray: (array): write your description
+            idx: (int): write your description
+            imgs_dir: (str): write your description
+        """
         assert os.path.isdir(imgs_dir)
         path = os.path.join(imgs_dir, "%08d.png" % idx)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -135,11 +198,26 @@ class Upsampler:
 
     @staticmethod
     def _write_timestamps(timestamps: list, timestamps_filename: str):
+        """
+        Write timestamps to timestamps file.
+
+        Args:
+            timestamps: (todo): write your description
+            timestamps_filename: (str): write your description
+        """
         with open(timestamps_filename, 'w') as t_file:
             t_file.writelines([str(t) + '\n' for t in timestamps])
 
     @staticmethod
     def _to_numpy_image(img: torch.Tensor):
+        """
+        Convert numpy array
+
+        Args:
+            img: (array): write your description
+            torch: (todo): write your description
+            Tensor: (todo): write your description
+        """
         img = np.clip(255 * img.cpu().numpy(), 0, 255).astype(np.uint8)
         img = np.transpose(img, (0, 2, 3, 1))
         return img
@@ -153,6 +231,34 @@ class Upsampler:
                            F_1_0: torch.Tensor,
                            total_frames: List[torch.Tensor],
                            timestamps: List[float]):
+        """
+        Takes the mean of the sensor.
+
+        Args:
+            self: (todo): write your description
+            I0: (todo): write your description
+            torch: (todo): write your description
+            Tensor: (todo): write your description
+            I1: (todo): write your description
+            torch: (todo): write your description
+            Tensor: (todo): write your description
+            time0: (float): write your description
+            torch: (todo): write your description
+            Tensor: (todo): write your description
+            time1: (float): write your description
+            torch: (todo): write your description
+            Tensor: (todo): write your description
+            F_0_1: (todo): write your description
+            torch: (todo): write your description
+            Tensor: (todo): write your description
+            F_1_0: (todo): write your description
+            torch: (todo): write your description
+            Tensor: (todo): write your description
+            total_frames: (todo): write your description
+            torch: (todo): write your description
+            Tensor: (todo): write your description
+            timestamps: (int): write your description
+        """
         B, _, _, _ = F_0_1.shape
 
         flow_mag_0_1_max, _ = F_0_1.pow(2).sum(1).pow(.5).view(B,-1).max(-1)
@@ -201,6 +307,19 @@ class Upsampler:
             _input,
             device: torch.device,
             dtype: torch.dtype = None):
+        """
+        Move input to device.
+
+        Args:
+            cls: (todo): write your description
+            _input: (todo): write your description
+            device: (str): write your description
+            torch: (todo): write your description
+            device: (str): write your description
+            dtype: (todo): write your description
+            torch: (todo): write your description
+            dtype: (todo): write your description
+        """
         if not torch.cuda.is_available() and not device == torch.device('cpu'):
             warnings.warn("CUDA not available! Input remains on CPU!", Warning)
 

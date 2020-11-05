@@ -13,21 +13,53 @@ from .const import mean, std, img_formats
 
 class Sequence:
     def __init__(self):
+        """
+        Initialize the plot.
+
+        Args:
+            self: (todo): write your description
+        """
         normalize = transforms.Normalize(mean=mean, std=std)
         self.transform = transforms.Compose([transforms.ToTensor(), normalize])
 
     def __iter__(self):
+        """
+        Returns an iterator over the iterable.
+
+        Args:
+            self: (todo): write your description
+        """
         return self
 
     def __next__(self):
+        """
+        Returns the next result.
+
+        Args:
+            self: (todo): write your description
+        """
         raise NotImplementedError
 
     def __len__(self):
+        """
+        Returns the number of bytes.
+
+        Args:
+            self: (todo): write your description
+        """
         raise NotImplementedError
 
 
 class ImageSequence(Sequence):
     def __init__(self, imgs_dirpath: str, fps: float):
+        """
+        Initialize all images.
+
+        Args:
+            self: (todo): write your description
+            imgs_dirpath: (str): write your description
+            fps: (todo): write your description
+        """
         super().__init__()
         self.fps = fps
 
@@ -40,9 +72,22 @@ class ImageSequence(Sequence):
 
     @classmethod
     def _is_img_file(cls, path: str):
+        """
+        Checks if the given path is an image file.
+
+        Args:
+            cls: (todo): write your description
+            path: (str): write your description
+        """
         return Path(path).suffix.lower() in img_formats
 
     def __next__(self):
+        """
+        Generator over next file
+
+        Args:
+            self: (todo): write your description
+        """
         for idx in range(0, len(self.file_names) - 1):
             file_paths = self._get_path_from_name([self.file_names[idx], self.file_names[idx + 1]])
             imgs = list()
@@ -54,10 +99,22 @@ class ImageSequence(Sequence):
             yield imgs, times_sec
 
     def __len__(self):
+        """
+        Returns the length of the file.
+
+        Args:
+            self: (todo): write your description
+        """
         return len(self.file_names) - 1
 
     @staticmethod
     def _pil_loader(path):
+        """
+        Convert pil image file.
+
+        Args:
+            path: (str): write your description
+        """
         with open(path, 'rb') as f:
             img = Image.open(f)
             img = img.convert('RGB')
@@ -73,6 +130,13 @@ class ImageSequence(Sequence):
             return img
 
     def _get_path_from_name(self, file_names: Union[list, str]) -> Union[list, str]:
+        """
+        Return the path of the given file.
+
+        Args:
+            self: (todo): write your description
+            file_names: (str): write your description
+        """
         if isinstance(file_names, list):
             return [os.path.join(self.imgs_dirpath, f) for f in file_names]
         return os.path.join(self.imgs_dirpath, file_names)
@@ -80,6 +144,14 @@ class ImageSequence(Sequence):
 
 class VideoSequence(Sequence):
     def __init__(self, video_filepath: str, fps: float=None):
+        """
+        Initialize video
+
+        Args:
+            self: (todo): write your description
+            video_filepath: (str): write your description
+            fps: (todo): write your description
+        """
         super().__init__()
         metadata = skvideo.io.ffprobe(video_filepath)
         self.fps = fps
@@ -94,6 +166,12 @@ class VideoSequence(Sequence):
         self.last_frame = None
 
     def __next__(self):
+        """
+        Generate a new frames
+
+        Args:
+            self: (todo): write your description
+        """
         for idx, frame in enumerate(self.videogen):
             h_orig, w_orig, _ = frame.shape
             w, h = w_orig//32*32, h_orig//32*32
@@ -116,4 +194,10 @@ class VideoSequence(Sequence):
             yield imgs, times_sec
 
     def __len__(self):
+        """
+        Returns the number of rows in bytes.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.len

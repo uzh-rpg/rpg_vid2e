@@ -7,6 +7,11 @@ from utils import Upsampler
 
 
 def get_flags():
+    """
+    Parse command line arguments.
+
+    Args:
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_dir", required=True, help='Path to input directory. See README.md for expected structure of the directory.')
     parser.add_argument("--output_dir", required=True, help='Path to non-existing output directory. This script will generate the directory.')
@@ -16,6 +21,11 @@ def get_flags():
 
 
 def main():
+    """
+    Main function.
+
+    Args:
+    """
     flags = get_flags()
 
     upsampler = Upsampler(
