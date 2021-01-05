@@ -7,7 +7,7 @@
 </p>
 
 This repository contains code that implements 
-video to events conversion as described in Gehrig et al. CVPR'20. The paper can be found [here](http://rpg.ifi.uzh.ch/docs/CVPR20_Gehrig.pdf)
+video to events conversion as described in Gehrig et al. CVPR'20 and the used dataset. The paper can be found [here](http://rpg.ifi.uzh.ch/docs/CVPR20_Gehrig.pdf)
 
 If you use this code in an academic context, please cite the following work:
 
@@ -22,6 +22,8 @@ If you use this code in an academic context, please cite the following work:
   year = {2020}
 }
 ```
+## Dataset
+The synthetic N-Caltech101 dataset, as well as video sequences used for event conversion can be found [here](http://rpg.ifi.uzh.ch/data/VID2E/ncaltech_syn_images.zip). For each sample of each class it contains events in the form `class/image_%04d.npz` and images in the form `class/image_%05d/images/image_%05d.png`, as well as the corresponding timestamps of the images in `class/image_%04d/timestamps.txt`.
 
 ## Installation
 Clone the repo *recursively with submodules*
