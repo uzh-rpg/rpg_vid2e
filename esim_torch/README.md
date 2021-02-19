@@ -4,7 +4,8 @@ This package exposes python bindings for ESIM with GPU support.
 Test your installation with 
 
 ```bash
-python esim_torch/test.py
+cd esim_torch/
+python test.py
 ```
 
 which should create a plot. 
