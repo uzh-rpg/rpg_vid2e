@@ -22,6 +22,10 @@ If you use this code in an academic context, please cite the following work:
   year = {2020}
 }
 ```
+## News
+We now also release new python bindings for esim with GPU support.
+Details are [here](esim_torch/README.md)
+
 ## Dataset
 The synthetic N-Caltech101 dataset, as well as video sequences used for event conversion can be found [here](http://rpg.ifi.uzh.ch/data/VID2E/ncaltech_syn_images.zip). For each sample of each class it contains events in the form `class/image_%04d.npz` and images in the form `class/image_%05d/images/image_%05d.png`, as well as the corresponding timestamps of the images in `class/image_%04d/timestamps.txt`.
 
@@ -47,8 +51,13 @@ conda install -y -c conda-forge opencv tqdm scikit-video eigen boost boost-cpp p
 Build the python bindings for ESIM
 
 ```bash
-cd esim_py
-pip install .
+pip install esim_py
+```
+
+Build the python bindings with GPU support with 
+
+```bash
+pip install esim_torch/
 ```
 
 ## Adaptive Upsampling
@@ -60,3 +69,8 @@ Consult the [README](upsampling/README.md) for detailed instructions and example
 *This package exposes python bindings for [ESIM](http://rpg.ifi.uzh.ch/docs/CORL18_Rebecq.pdf) which can be used within a training loop.*
 
 For detailed instructions and example consult the [README](esim_py/README.md)
+
+## esim\_torch
+*This package exposes python bindings for [ESIM](http://rpg.ifi.uzh.ch/docs/CORL18_Rebecq.pdf) with GPU support.*
+
+For detailed instructions and example consult the [README](esim_torch/README.md)
