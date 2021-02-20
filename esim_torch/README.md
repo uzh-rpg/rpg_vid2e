@@ -19,9 +19,25 @@ esim = esim_torch.EventSimulator_torch(
     contrast_threshold_pos,  # contrast threshold, currently only constant thresholds are supported 
 )
 
+# event generation
 events = esim.forward(
-    images,        # torch tensor with type float32, shape T x H x W
+    log_images,        # torch tensor with type float32, shape T x H x W
     timestamps_ns  # torch tensor with type int64,   shape T 
 )
+
+# Reset the internal state of the simulator
+events.reset()
+
+# events can also be generated in a for loop 
+# to keep memory requirements low
+for log_image, timestamp_ns in zip(log_images, timestamps_ns):
+    sub_events = esim.forward(log_image, timestamp_ns)
+
+    # for the first image, no events are generated, so this needs to be skipped
+    if sub_events is None:
+        continue
+
+    # do something with the events
+    some_function(sub_events)
 
 ```
