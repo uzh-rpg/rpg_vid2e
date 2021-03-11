@@ -51,7 +51,7 @@ conda install -y -c conda-forge opencv tqdm scikit-video eigen boost boost-cpp p
 Build the python bindings for ESIM
 
 ```bash
-pip install esim_py
+pip install esim_py/
 ```
 
 Build the python bindings with GPU support with 
