@@ -3,9 +3,13 @@ import esim_cuda
 
 
 class EventSimulator_torch(torch.nn.Module):
-    def __init__(self, contrast_threshold):
-        self.contrast_threshold = contrast_threshold
+    def __init__(self, contrast_threshold_neg=0.2, contrast_threshold_pos=0.2, refractory_period=0):
+        self.contrast_threshold_neg = contrast_threshold_neg
+        self.contrast_threshold_pos = contrast_threshold_pos
+        self.refractory_period = refractory_period
+
         self.initial_reference_values = None
+        self.timestamps_last_event = None
         self.last_image = None
         self.last_time = None
 
@@ -31,6 +35,7 @@ class EventSimulator_torch(torch.nn.Module):
 
         if self.initial_reference_values is None:
             self.initial_reference_values = images[0].clone()
+            self.timestamps_last_event = torch.zeros_like(self.initial_reference_values).long()
 
         if self.last_image is not None:
             images = torch.cat([self.last_image, images], 0)
@@ -60,8 +65,9 @@ class EventSimulator_torch(torch.nn.Module):
         reference_values_over_time, event_counts = esim_cuda.forward_count_events(images, 
                                                                                   self.initial_reference_values,
                                                                                   reference_values_over_time,
-                                                                                  event_counts, 
-                                                                                  self.contrast_threshold)
+                                                                                  event_counts,
+                                                                                  self.contrast_threshold_neg,
+                                                                                  self.contrast_threshold_pos)
 
         # compute the offsets for each event group
         cumsum = event_counts.view(-1).cumsum(dim=0)
@@ -77,12 +83,16 @@ class EventSimulator_torch(torch.nn.Module):
                                    reference_values_over_time,
                                    offsets,
                                    events,
-                                   self.contrast_threshold)
+                                   self.timestamps_last_event,
+                                   self.contrast_threshold_neg,
+                                   self.contrast_threshold_pos,
+                                   self.refractory_period)
 
         # sort by timestamps. Do this for each batch of events
         events = events[events[:,2].argsort()]
 
         self.initial_reference_values = reference_values_over_time[-1]
 
+        events = events[events[:,2]>0]
 
         return dict(zip(['x','y','t','p'], events.T))
