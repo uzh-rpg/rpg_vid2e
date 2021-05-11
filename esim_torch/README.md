@@ -16,7 +16,9 @@ import esim_torch
 
 # constructor
 esim = esim_torch.EventSimulator_torch(
-    contrast_threshold_pos,  # contrast threshold, currently only constant thresholds are supported 
+    contrast_threshold_neg,  # contrast threshold for negative events
+    contrast_threshold_pos,  # contrast threshold for positive events
+    refractory_period_ns     # refractory period in nanoseconds
 )
 
 # event generation
