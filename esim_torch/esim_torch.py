@@ -6,7 +6,7 @@ class EventSimulator_torch(torch.nn.Module):
     def __init__(self, contrast_threshold_neg=0.2, contrast_threshold_pos=0.2, refractory_period=0):
         self.contrast_threshold_neg = contrast_threshold_neg
         self.contrast_threshold_pos = contrast_threshold_pos
-        self.refractory_period = refractory_period
+        self.refractory_period = int(refractory_period)
 
         self.initial_reference_values = None
         self.timestamps_last_event = None
@@ -88,11 +88,11 @@ class EventSimulator_torch(torch.nn.Module):
                                    self.contrast_threshold_pos,
                                    self.refractory_period)
 
+
         # sort by timestamps. Do this for each batch of events
         events = events[events[:,2].argsort()]
+        events = events[events[:,2]>0]
 
         self.initial_reference_values = reference_values_over_time[-1]
-
-        events = events[events[:,2]>0]
 
         return dict(zip(['x','y','t','p'], events.T))

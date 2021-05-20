@@ -93,8 +93,7 @@ __global__ void esim_cuda_forward_kernel(
     int64_t t1 = ts[t+1];
     
     if (t > 0) {
-      ref0 = refs_over_time[linIdx+(t-1)*H*W]; 
-      
+      ref0 = refs_over_time[linIdx+(t-1)*H*W];
     }
 
     int polarity = (i1 >= ref0) ? 1 : -1;
@@ -106,8 +105,10 @@ __global__ void esim_cuda_forward_kernel(
     {
       scalar_t r = (ref0 + (evIdx+1) * polarity * ct - i0) / (i1 - i0);
       int64_t timestamp = t0 + (t1-t0)*r;
+      int64_t delta_t = timestamp - t_prev;
 
-      if (timestamp - t_prev > t_ref) {
+
+      if (delta_t > t_ref || t_prev == 0) {
           int64_t idx = 4 * (offset + evIdx);
           ev[idx + 0] = x;
           ev[idx + 1] = y;
