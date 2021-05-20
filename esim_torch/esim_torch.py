@@ -3,10 +3,10 @@ import esim_cuda
 
 
 class EventSimulator_torch(torch.nn.Module):
-    def __init__(self, contrast_threshold_neg=0.2, contrast_threshold_pos=0.2, refractory_period=0):
+    def __init__(self, contrast_threshold_neg=0.2, contrast_threshold_pos=0.2, refractory_period_ns=0):
         self.contrast_threshold_neg = contrast_threshold_neg
         self.contrast_threshold_pos = contrast_threshold_pos
-        self.refractory_period = int(refractory_period)
+        self.refractory_period_ns = int(refractory_period_ns)
 
         self.initial_reference_values = None
         self.timestamps_last_event = None
@@ -86,7 +86,7 @@ class EventSimulator_torch(torch.nn.Module):
                                    self.timestamps_last_event,
                                    self.contrast_threshold_neg,
                                    self.contrast_threshold_pos,
-                                   self.refractory_period)
+                                   self.refractory_period_ns)
 
 
         # sort by timestamps. Do this for each batch of events
