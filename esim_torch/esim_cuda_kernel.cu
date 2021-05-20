@@ -20,7 +20,7 @@ __global__ void count_events_cuda_forward_kernel(
     const scalar_t* __restrict__ init_refs,
     scalar_t* __restrict__ refs_over_time,
     int64_t* __restrict__ count_ev, 
-    int T, int H, int W, float ct) 
+    int T, int H, int W, float ct_neg, float ct_pos)
 {
   // linear index
   const int linIdx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -43,6 +43,7 @@ __global__ void count_events_cuda_forward_kernel(
 
     // process events leading up to i1. 
     polarity = (i1 >= ref) ? 1 : -1;
+    float ct = (i1 >= ref) ? ct_pos : ct_neg;
     num_events = std::abs(i1 - ref) / ct;
     tot_num_events += num_events;
     ref += polarity * ct * num_events;
@@ -64,7 +65,8 @@ __global__ void esim_cuda_forward_kernel(
   const scalar_t* __restrict__ refs_over_time,
   const int64_t* __restrict__ offsets,
   int64_t* __restrict__ ev,
-  int T, int H, int W, float ct
+  int64_t* __restrict__ t_last_ev,
+  int T, int H, int W, float ct_neg, float ct_pos, int64_t t_ref
 ) 
 {
   // linear index
@@ -91,26 +93,32 @@ __global__ void esim_cuda_forward_kernel(
     int64_t t1 = ts[t+1];
     
     if (t > 0) {
-      ref0 = refs_over_time[linIdx+(t-1)*H*W]; 
-      
+      ref0 = refs_over_time[linIdx+(t-1)*H*W];
     }
 
     int polarity = (i1 >= ref0) ? 1 : -1;
+    float ct = (i1 >= ref0) ? ct_pos : ct_neg;
     int64_t num_events = std::abs(i1 - ref0) / ct;
-  
+
+    int64_t t_prev = t_last_ev[linIdx];
     for (int evIdx=0; evIdx<num_events; evIdx++) 
     {
       scalar_t r = (ref0 + (evIdx+1) * polarity * ct - i0) / (i1 - i0);
       int64_t timestamp = t0 + (t1-t0)*r;
-      int64_t idx = 4 * (offset+evIdx);
+      int64_t delta_t = timestamp - t_prev;
 
-      ev[idx + 0] = x;
-      ev[idx + 1] = y;
-      ev[idx + 2] = timestamp;
-      ev[idx + 3] = polarity;
+
+      if (delta_t > t_ref || t_prev == 0) {
+          int64_t idx = 4 * (offset + evIdx);
+          ev[idx + 0] = x;
+          ev[idx + 1] = y;
+          ev[idx + 2] = timestamp;
+          ev[idx + 3] = polarity;
+          t_last_ev[linIdx] = timestamp;
+          t_prev = timestamp;
+      }
     } 
     offset += num_events;
-
   }
 }
 
@@ -119,7 +127,8 @@ std::vector<torch::Tensor> esim_forward_count_events(
   const torch::Tensor& init_refs,  // H x W
   torch::Tensor& refs_over_time,   // T-1 x H x W
   torch::Tensor& count_ev,         // H x W
-  float ct)
+  float ct_neg,
+  float ct_pos)
 {
   CHECK_INPUT(imgs);
   CHECK_INPUT(count_ev);
@@ -145,7 +154,7 @@ std::vector<torch::Tensor> esim_forward_count_events(
       init_refs.data<float>(),
       refs_over_time.data<float>(),
       count_ev.data<int64_t>(),
-      T, H, W, ct 
+      T, H, W, ct_neg, ct_pos
     );
 
   return {refs_over_time, count_ev};
@@ -158,7 +167,10 @@ torch::Tensor esim_forward(
     const torch::Tensor& refs_over_time, // T-1 x H x W
     const torch::Tensor& offsets, // H x W 
     torch::Tensor& ev,  // N x 4, x y t p
-    float ct
+    torch::Tensor& t_last_ev,  // H x W
+    float ct_neg,
+    float ct_pos,
+    int64_t dt_ref
   ) 
 {
   CHECK_INPUT(imgs);
@@ -173,6 +185,7 @@ torch::Tensor esim_forward(
   CHECK_DEVICE(imgs, offsets);
   CHECK_DEVICE(imgs, init_refs);
   CHECK_DEVICE(imgs, refs_over_time);
+  CHECK_DEVICE(imgs, t_last_ev);
 
   //cudaSetDevice(imgs.device().index());
 
@@ -190,7 +203,8 @@ torch::Tensor esim_forward(
       refs_over_time.data<float>(),
       offsets.data<int64_t>(),
       ev.data<int64_t>(),
-      T, H, W, ct
+      t_last_ev.data<int64_t>(),
+      T, H, W, ct_neg, ct_pos, dt_ref
     );
   
   return ev;
