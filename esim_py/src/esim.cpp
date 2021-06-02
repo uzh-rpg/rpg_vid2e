@@ -41,14 +41,11 @@ Eigen::MatrixXd EventSimulator::generateFromVideo(std::string video_path, std::s
 
     while (cap.read(img))
     {
-        cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
-
         img.convertTo(img, CV_32F, 1.0/255);
-
-        log_img = img;
+        cv::Mat log_img = img;
         if (use_log_img_)
             cv::log(img+log_eps_, log_img);
-
+        
         std::getline(timestamps_file, time_str);
         time = std::stod(time_str);
         
@@ -77,18 +74,13 @@ Eigen::MatrixXd EventSimulator::generateFromStampedImageSequence(std::vector<std
         if ((i < timestamps.size()-1)  && timestamps[i+1]<timestamps[i]) 
             throw std::runtime_error("Timestamps must be sorted in ascending order.");
 
-        img = cv::imread(image_paths[i], -1);
-       
-        if (img.channels() == 3) {
-            cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
-            img.convertTo(img, CV_32F, 1.0/255);
-        }
+        img = cv::imread(image_paths[i], cv::IMREAD_GRAYSCALE);
 
         if(img.empty()) 
             throw std::runtime_error("unable to open the image " + image_paths[i]);
-
-    
-        log_img = img;
+       
+        img.convertTo(img, CV_32F, 1.0/255);
+        cv::Mat log_img = img;
         if (use_log_img_)
             cv::log(img+log_eps_, log_img);
 
@@ -122,15 +114,12 @@ Eigen::MatrixXd EventSimulator::generateFromFolder(std::string image_folder, std
 
     for (const std::string& file : image_files)
     {
-        img = cv::imread(file);
-        cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
-
+        img = cv::imread(file, cv::IMREAD_GRAYSCALE);
         if(img.empty()) 
             throw std::runtime_error("unable to open the image " + file);
 
         img.convertTo(img, CV_32F, 1.0/255);
-
-        log_img = img;
+        cv::Mat log_img = img;
         if (use_log_img_)
             cv::log(img+log_eps_, log_img);
 
