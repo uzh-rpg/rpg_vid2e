@@ -11,7 +11,7 @@ def increasing_sin_wave(t):
 
 if __name__ == "__main__":
     c = 0.2
-    refractory_period = 5e6
+    refractory_period_ns = 5e6
     esim_torch = EventSimulator_torch(contrast_threshold_neg=c,
                                       contrast_threshold_pos=c,
                                       refractory_period_ns=refractory_period_ns)
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     print("Plotting")
     event_timestamps = events['t']
     event_polarities = events['p']
-    i0 = log_images[0]
+    i0 = log_images[0].cpu().numpy().ravel()
 
     fig, ax = plt.subplots(ncols=2)
     timestamps_ns = timestamps_ns.cpu().numpy()
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         if i > 0:
             ax[1].scatter([t], [t-event_timestamps[i-1]], c=color)
 
-    ax[1].plot([0,3e8], [refractory_period, refractory_period])
+    ax[1].plot([0,3e8], [refractory_period_ns, refractory_period_ns])
 
     plt.show()
 
