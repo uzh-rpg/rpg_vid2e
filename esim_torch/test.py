@@ -10,7 +10,7 @@ from esim_torch import EventSimulator_torch
 if __name__ == "__main__":
     esim_torch = EventSimulator_torch(contrast_threshold_neg=0.2,
                                       contrast_threshold_pos=0.2,
-                                      refractory_period=0)
+                                      refractory_period_ns=0)
 
     print("Loading images")
     image_files = sorted(glob.glob("../esim_py/tests/data/images/images/*.png"))
