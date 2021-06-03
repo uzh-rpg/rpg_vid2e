@@ -14,7 +14,7 @@ if __name__ == "__main__":
     refractory_period = 5e6
     esim_torch = EventSimulator_torch(contrast_threshold_neg=c,
                                       contrast_threshold_pos=c,
-                                      refractory_period=refractory_period)
+                                      refractory_period_ns=refractory_period_ns)
 
     print("Loading images")
     timestamps_s = np.genfromtxt("../esim_py/tests/data/images/timestamps.txt")
