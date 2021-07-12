@@ -19,8 +19,8 @@ def process_dir(timestamps_file_path,
                 images_directory,
                 event_file_path,
                 args):
-    timestamps_s = np.genfromtxt(timestamps_file_path, dtype="int64")
-    timestamps_s = torch.from_numpy(timestamps_s).cuda()
+    timestamps_ns = np.genfromtxt(timestamps_file_path, dtype="float32") * 1e9
+    timestamps_ns = torch.from_numpy(timestamps_ns).long().cuda()
     esim = esim_torch.EventSimulator_torch(contrast_threshold_neg=args.contrast_threshold_neg,
                                            contrast_threshold_pos=args.contrast_threshold_pos,
                                            refractory_period_ns=args.refractory_period_ns)
@@ -33,8 +33,7 @@ def process_dir(timestamps_file_path,
         log_image = torch.from_numpy(log_image).cuda()
 
         # generate events
-        timestamp_ns = (timestamps_s[i]* 1e9)
-        events = esim.forward(log_image, timestamp_ns)
+        events = esim.forward(log_image, timestamps_ns[i])
 
         if events is None:
             continue
