@@ -62,7 +62,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     args.linlog = True
 
-    for path, subdirs, files in os.walk(args.images):
+    for path, subdirs, files in os.walk(args.input_directory):
         if args.timestamps in files:
             assert len(subdirs) == 1
             timestamps_file_path = join(path, args.timestamps)
