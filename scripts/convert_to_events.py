@@ -33,7 +33,7 @@ def process_dir(timestamps_file_path,
         log_image = torch.from_numpy(log_image).cuda()
 
         # generate events
-        timestamp_ns = int(timestamps_s[i]* 1e9)
+        timestamp_ns = (timestamps_s[i]* 1e9)
         events = esim.forward(log_image, timestamp_ns)
 
         if events is None:
