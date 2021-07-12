@@ -21,8 +21,8 @@ def process_dir(timestamps_file_path,
                 args):
     timestamps_s = np.genfromtxt(timestamps_file_path, dtype="int64")
     timestamps_s = torch.from_numpy(timestamps_s).cuda()
-    esim = esim_torch.EventSimulator_torch(contrast_threshold_neg=args.contrast_threshold,
-                                           contrast_threshold_pos=args.contrast_threshold,
+    esim = esim_torch.EventSimulator_torch(contrast_threshold_neg=args.contrast_threshold_neg,
+                                           contrast_threshold_pos=args.contrast_threshold_pos,
                                            refractory_period_ns=args.refractory_period_ns)
 
     outfile = Path(event_file_path)
