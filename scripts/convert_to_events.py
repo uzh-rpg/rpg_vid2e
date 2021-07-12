@@ -3,16 +3,15 @@ import glob
 import cv2
 import os
 import numpy as np
-from os.path import join
+from os.path import join, dirname
 import torch
 import tqdm
 from utils import image_iterator_from_folder, H5Writer, Events
 
+import sys
+sys.path.append(join(dirname(__file__), "..", "esim_torch"))
+print(sys.path)
 import esim_torch
-
-
-import data.format
-import conversion.h5writer
 from pathlib import Path
 
 
@@ -27,7 +26,7 @@ def process_dir(timestamps_file_path,
                                            refractory_period_ns=args.refractory_period_ns)
 
     outfile = Path(event_file_path)
-    h5writer = conversion.h5writer.H5Writer(outfile)
+    h5writer = H5Writer(outfile)
 
     for i, image in image_iterator_from_folder(images_directory, enum=True):
         log_image = np.log(image.astype("float32") / 255 + 1e-5)
