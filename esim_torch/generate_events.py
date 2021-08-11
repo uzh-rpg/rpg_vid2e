@@ -51,10 +51,6 @@ def process_dir(outdir, indir, args):
         pbar.set_description(f"Num events generated: {num_events}")
         pbar.update(1)
         counter += 1
-        
-
-
-
 
 
 if __name__ == "__main__":
@@ -74,12 +70,3 @@ if __name__ == "__main__":
             output_folder = os.path.join(args.output_dir, os.path.relpath(path, args.input_dir))
 
             process_dir(output_folder, path, args)
-
-
-
-
-
-
-
-    
-
