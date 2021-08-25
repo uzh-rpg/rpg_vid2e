@@ -5,7 +5,7 @@ You can use our example directory to experiment
 ```bash
 device=cpu
 # device=cuda:0
-python upsample.py --input_dir=example/original --output_dir=example/upsampled --device=$device
+python upsample.py --input_dir=../example/original --output_dir=../example/upsampled --device=$device
 
 ```
 The **expected input structure** is as follows:

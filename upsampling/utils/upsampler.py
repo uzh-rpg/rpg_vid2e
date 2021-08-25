@@ -37,8 +37,8 @@ class Upsampler:
         self.TP = transforms.Compose([revNormalize])
 
     def _load_net_from_checkpoint(self):
-        ckpt_file = 'checkpoint/SuperSloMo.ckpt'
-
+        ckpt_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "checkpoint", "SuperSloMo.ckpt")
+        
         if not os.path.isfile(ckpt_file):
             print('Downloading SuperSlowMo checkpoint to {} ...'.format(ckpt_file))
             g = urllib.request.urlopen('http://rpg.ifi.uzh.ch/data/VID2E/SuperSloMo.ckpt')

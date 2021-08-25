@@ -37,15 +37,10 @@ git clone git@github.com:uzh-rpg/rpg_vid2e.git --recursive
 ```
 
 ## Installation with [Anaconda](https://www.anaconda.com/distribution/)
-Adapt the CUDA toolkit version according to your setup. 
 
 ```bash
-cuda_version=10.1
-
-conda create -y -n vid2e python=3.7
-conda activate vid2e
-conda install -y pytorch torchvision cudatoolkit=$cuda_version -c pytorch
-conda install -y -c conda-forge opencv tqdm scikit-video eigen boost boost-cpp pybind11 matplotlib
+conda create --name vid2e --file requirements.txt
+conda install -y -c conda-forge pybind11 matplotlib
 ```
 
 Build the python bindings for ESIM
@@ -74,3 +69,24 @@ For detailed instructions and example consult the [README](esim_py/README.md)
 *This package exposes python bindings for [ESIM](http://rpg.ifi.uzh.ch/docs/CORL18_Rebecq.pdf) with GPU support.*
 
 For detailed instructions and example consult the [README](esim_torch/README.md)
+
+## Example
+To run an example, first upsample the example videos 
+
+```bash
+device=cpu
+# device=cuda:0
+python upsampling/upsample.py --input_dir=example/original --output_dir=example/upsampled --device=$device
+
+```
+This will generate upsampling/upsampled with in the `example/upsampled` folder. To generate events, use
+```bash
+python esim_torch/generate_events.py --input_dir=example/upsampled \
+                                     --output_dir=example/events \
+                                     --contrast_threshold_neg=0.2 \
+                                     --contrast_threshold_pos=0.2 \
+                                     --refractory_period_ns=0
+```
+
+
+

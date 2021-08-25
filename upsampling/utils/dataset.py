@@ -81,7 +81,7 @@ class ImageSequence(Sequence):
 class VideoSequence(Sequence):
     def __init__(self, video_filepath: str, fps: float=None):
         super().__init__()
-        metadata = skvideo.io.ffprobe(video_filepath)
+        metadata = skvideo.io.ffprobe(os.path.abspath(video_filepath))
         self.fps = fps
         if self.fps is None:
             self.fps = float(Fraction(metadata['video']['@avg_frame_rate']))
@@ -90,7 +90,7 @@ class VideoSequence(Sequence):
 
         # Length is number of frames - 1 (because we return pairs).
         self.len = int(metadata['video']['@nb_frames']) - 1
-        self.videogen = skvideo.io.vreader(video_filepath)
+        self.videogen = skvideo.io.vreader(os.path.abspath(video_filepath))
         self.last_frame = None
 
     def __next__(self):
