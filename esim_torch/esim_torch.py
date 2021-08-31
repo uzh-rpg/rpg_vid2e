@@ -90,6 +90,9 @@ class EventSimulator_torch(torch.nn.Module):
 
 
         # sort by timestamps. Do this for each batch of events
+        if len(events) == 0:
+            return None
+
         events = events[events[:,2].argsort()]
         events = events[events[:,2]>0]
 
