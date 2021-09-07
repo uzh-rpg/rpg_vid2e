@@ -39,7 +39,7 @@ git clone git@github.com:uzh-rpg/rpg_vid2e.git --recursive
 ## Installation with [Anaconda](https://www.anaconda.com/distribution/)
 
 ```bash
-conda config --add channel pytorch
+conda config --add channels pytorch
 conda config --append channels conda-forge
 conda create --name vid2e --file requirements.txt
 conda install -y -c conda-forge pybind11 matplotlib
