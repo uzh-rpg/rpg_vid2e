@@ -8,10 +8,11 @@ setup(
                       sources=[
                       'esim_cuda_kernel.cu',
                       ],
-                      extra_compile_args={
-                     'cxx': ['-g'],
-                     'nvcc': ['-arch=sm_60', '-O3', '-use_fast_math']
-                     })
+                     # extra_compile_args={
+                     #'cxx': ['-g'],
+                     #'nvcc': ['-arch=sm_60', '-O3', '-use_fast_math']
+                     #}
+                     )
     ],
     cmdclass={
         'build_ext': BuildExtension
