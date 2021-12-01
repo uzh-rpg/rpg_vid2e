@@ -38,3 +38,9 @@ class Visualizer:
         t1_us = np.arange(t_min_us, t_max_us, 1e6 / framerate)
         t0_us = np.clip(t1_us - window_size_ms * 1e3, t_min_us, t_max_us)
         return t0_us, t1_us
+
+    def pause(self):
+        self.is_paused = True
+
+    def unpause(self):
+        self.is_paused= False
