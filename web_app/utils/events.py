@@ -40,3 +40,19 @@ class Events:
         events = load_events(file)
         print(f"Loaded events from {file}, found {len(events)} events with shape {events.shape}")
         return cls(shape=shape, events=events)
+
+    @property
+    def p(self):
+        return self.events[:,3]
+
+    @property
+    def x(self):
+        return self.events[:, 0]
+
+    @property
+    def y(self):
+        return self.events[:, 1]
+
+    @property
+    def t(self):
+        return self.events[:, 2]
