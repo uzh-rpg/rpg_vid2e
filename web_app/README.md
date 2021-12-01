@@ -33,7 +33,7 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a> -->
 
-  <h3 align="center">ESIM Web App Playground</h3>
+  <h2 align="center">ESIM Web App Playground</h3>
 
   <p align="center">
     A Web App for Generating Events from Upsampled Video Frames & Visualization of Events from Live Video of a Webcam! 
@@ -85,7 +85,7 @@
 
 
 <!-- ABOUT THE PROJECT -->
-### About The Project
+## About The Project
 
 <!-- ![Product Name Screen Shot](screencast.gif) -->
 
@@ -118,13 +118,13 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 
 <!-- GETTING STARTED -->
-### Getting Started
+## Getting Started
 
 Follow these steps in order to make this app run in your local system.
 
 _This code base assumes you have access to a NVIDIA GPU in your system with proper drivers installed along with the `cuda-toolkit` version `10.1`._
 
-#### Prerequisites & Installation
+### Prerequisites & Installation
 
 Make sure that you have followed the [Instalation with Anaconda Instruction](https://github.com/uzh-rpg/rpg_vid2e) and have created the `vid2e` Conda environment with the `esim_torch` package installed in this environment.
 1. Activate the Conda environment
@@ -143,7 +143,7 @@ Make sure that you have followed the [Instalation with Anaconda Instruction](htt
 ```sh
 pip install streamlit
 ```
-#### Running the Web App Locally
+### Running the Web App Locally
 
 If you want to run this app locally on your system then follow these steps.
 1. Run the App
@@ -156,7 +156,7 @@ _When using the 'vide upload' feature, the uploaded file would be saved in the '
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-#### Running the Web App on Google Colab
+### Running the Web App on Google Colab
 
 You can also run this web app on Google Colab then follow these steps in order.
 
