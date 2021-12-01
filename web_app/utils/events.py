@@ -59,3 +59,6 @@ class Events:
 
     def downsample(self, n):
         return Events(self.shape, self.events[::n])
+
+    def slice_between_t(self, t0, t1):
+        return self.slice_before_t(t1).slice_after_t(t0)
