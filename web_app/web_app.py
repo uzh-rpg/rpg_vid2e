@@ -244,3 +244,106 @@ if add_selectbox == "Offline Video Generator":
       "input_dir": "new_data/upsampled/",
       "output_dir": "new_data/events/"
   }
+
+
+  generate_button = st.button("Generate Events")
+  if generate_button:
+
+      #Step 1:
+      if video_file is not None:
+        #read the video file
+        #video_object = VideoSequence(video_file.getvalue())
+        #saving the uploaded file on the server
+        save_path = "new_data/original/video_upload/"
+        completeName = os.path.join(save_path, video_file.name)
+        with open(completeName, "wb") as file:
+          file.write(video_file.getvalue())
+        st.success("Uploaded video file saved on the server")
+
+      #Step 2:
+      if upsampling:
+        print("inside upsampling")
+        os.system("python upsampling/upsample.py --input_dir=new_data/original/ --output_dir=new_data/upsampled --device=cuda:0")
+
+      #Step 3: Event Generation
+      process_dir(args["output_dir"], args["input_dir"], args)
+
+      #Step 4: Download Option
+      with open(os.path.join(args["output_dir"], "events.npz"), "rb") as file:
+        btn = st.download_button(label="Download Events", data=file, file_name="events.npz")
+        if btn:
+          st.markdown(':beer::beer::beer::beer::beer::beer::beer::beer::beer::beer::beer:')
+
+
+
+elif add_selectbox == "Live Webcam":
+
+  st.sidebar.subheader('ESIM Settings')
+  ct_options = ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '2.0']
+  st.sidebar.subheader('Positive Contrast Threshold')
+  ct_p = st.sidebar.select_slider("Choose the +ve contrast threshold", options=ct_options)
+  st.sidebar.subheader('Negative Contrast Threshold')
+  ct_n = st.sidebar.select_slider("Choose the -ve contrast threshold", options=ct_options)
+  window_size_options = [24, 30, 60, 80, 100, 120]
+  st.sidebar.subheader('Window Size (Number of Frames)')
+  window_size = st.sidebar.select_slider("Choose the window size or number of frames for event generation", options=window_size_options)
+
+
+  esim = EventSimulator_torch(0.5, 0.5, 0)
+  FRAME_WINDOW = st.image([])
+  cam = cv2.VideoCapture(0)
+  
+  frame_count = 0
+  #frames = np.empty(shape=(7,))
+  #timestamps = np.empty(shape=(7,))
+  frame_log = []
+  timestamps_ns = []
+  window_size = 10
+  while True:
+    # esim = EventSimulator_torch(0.4, 0.4, 0)
+    if frame_count <= window_size:
+      ret, frame = cam.read()
+      if not ret:
+        continue
+      if ret:
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        #FRAME_WINDOW.image(frame)
+        #st.write(cam.get(cv2.CAP_PROP_POS_MSEC))
+        #st.markdown(f"FPS: {cam.get(cv2.CAP_PROP_POS_MSEC)}")
+
+        frame_log_new = np.log(frame.astype("float32") / 255 + 1e-5)
+        #frame_log = torch.from_numpy(frame_log).cuda()
+        #frame_log.append(frame_log_new)
+        frame_log.append(frame_log_new)
+
+        timestamp_curr = cam.get(cv2.CAP_PROP_POS_MSEC)
+        timestamps_ns_new = (timestamp_curr * 1e9)
+        #timestamps_ns_new = np.array(timestamps_ns, dtype="int64")
+        #print(type(timestamp_curr))  
+        #timestamps_ns = torch.from_numpy(timestamps_ns).cuda()
+        # timestamps_ns.append(timestamps_ns_new)
+        timestamps_ns.append(timestamps_ns_new)
+
+        print(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+        print(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        frame_count += 1
+
+    else:
+      #Event Generation
+      # esim = EventSimulator_torch(0.2, 0.2, 0)
+
+      #render events as frames
+      frame_log_torch_tensor = torch.from_numpy(np.array(frame_log)).cuda()
+      timestamps_ns_torch_tensor = torch.from_numpy(np.array(timestamps_ns, dtype="int64")).cuda()
+      generated_events = esim.forward(frame_log_torch_tensor, timestamps_ns_torch_tensor)
+      generated_events = {k: v.cpu() for k, v in generated_events.items()}
+      generated_events = np.stack([generated_events['x'], generated_events['y'], generated_events['t'], generated_events['p']], -1)
+      generated_events = Events((int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))), generated_events)
+      event_rendering = generated_events.render()
+      print(event_rendering.shape)
+      FRAME_WINDOW.image(event_rendering)
+
+      frame_count = 0
+      frame_log.clear()
+      timestamps_ns.clear()
