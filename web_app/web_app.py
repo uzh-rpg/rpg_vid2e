@@ -132,3 +132,33 @@ if add_selectbox == "Offline Video Generator":
   def save_to_npz(target_path,  data: dict):
     assert os.path.exists(target_path)
     np.savez(os.path.join(target_path, "events.npz"), **data)
+
+  def save_to_h5(target_path, data: dict):
+      assert os.path.exists(target_path)
+
+      filter_id = 32001  # Blosc
+
+      compression_level = 1  # {0, ..., 9}
+      shuffle = 2  # {0: none, 1: byte, 2: bit}
+      # From https://github.com/Blosc/c-blosc/blob/7435f28dd08606bd51ab42b49b0e654547becac4/blosc/blosc.h#L66-L71
+      # define BLOSC_BLOSCLZ   0
+      # define BLOSC_LZ4       1
+      # define BLOSC_LZ4HC     2
+      # define BLOSC_SNAPPY    3
+      # define BLOSC_ZLIB      4
+      # define BLOSC_ZSTD      5
+      compressor_type = 5
+      compression_opts = (0, 0, 0, 0, compression_level, shuffle, compressor_type)
+
+      with h5py.File(str(target_path+"events.h5"), 'w') as h5f:
+          ev_group = 'events'
+          #h5f.create_dataset('{}/p'.format(ev_group), data=data['events'][:, 3], compression=filter_id, compression_opts=compression_opts, chunks=True)
+          h5f.create_dataset('{}/p'.format(ev_group), data=data['p'], compression=filter_id, compression_opts=compression_opts, chunks=True)
+          #h5f.create_dataset('{}/t'.format(ev_group), data=data['events'][:, 2], compression=filter_id, compression_opts=compression_opts, chunks=True)
+          h5f.create_dataset('{}/t'.format(ev_group), data=data['t'], compression=filter_id, compression_opts=compression_opts, chunks=True)
+          #h5f.create_dataset('{}/x'.format(ev_group), data=data['events'][:, 0], compression=filter_id, compression_opts=compression_opts, chunks=True)
+          h5f.create_dataset('{}/x'.format(ev_group), data=data['x'], compression=filter_id, compression_opts=compression_opts, chunks=True)
+          #h5f.create_dataset('{}/y'.format(ev_group), data=data['events'][:, 1], compression=filter_id, compression_opts=compression_opts, chunks=True)
+          h5f.create_dataset('{}/y'.format(ev_group), data=data['y'], compression=filter_id, compression_opts=compression_opts, chunks=True)
+          btn = st.download_button(label="Download Events", data=h5f, file_name="events.h5")
+      st.write("Completed")
