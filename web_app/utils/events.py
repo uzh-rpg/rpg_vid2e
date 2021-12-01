@@ -62,3 +62,15 @@ class Events:
 
     def slice_between_t(self, t0, t1):
         return self.slice_before_t(t1).slice_after_t(t0)
+
+    def slice_before_t(self, t, num_events=-1):
+        events = self.events[self.events[:, 2] < t]
+        if num_events > 0:
+            events = events[-num_events:]
+        return Events(shape=self.shape, events=events)
+
+    def slice_after_t(self, t):
+        return Events(shape=self.shape, events=self.events[self.t>t])
+
+    def slice_num_events(self, num_events):
+        return Events(shape=self.shape, events=self.events[-num_events:])
