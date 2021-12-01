@@ -28,3 +28,9 @@ class Events:
 
     def __len__(self):
         return len(self.events)
+
+    @classmethod
+    def from_folder(cls, folder, shape):
+        event_files = sorted(glob.glob(join(folder, "*")))
+        events = np.concatenate([load_events(f) for f in event_files], 0)
+        return cls(shape=shape, events=events)
