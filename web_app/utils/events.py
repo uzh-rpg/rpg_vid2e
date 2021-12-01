@@ -20,3 +20,11 @@ def load_events(f):
         return np.stack([np.array(fh['x']), np.array(fh['y']), np.array(fh['t']), np.array(fh['p'])], -1)
     else:
         raise NotImplementedErrort(f"Could not read {f}")
+
+class Events:
+    def __init__(self, shape=None, events=None):
+        self.shape = shape
+        self.events = np.array(events)
+
+    def __len__(self):
+        return len(self.events)
