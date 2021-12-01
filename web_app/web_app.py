@@ -115,3 +115,16 @@ if add_selectbox == "Offline Video Generator":
 
     def __len__(self):
       return self.len
+
+  #writer = skvideo.io.FFmpegWriter("outputvideo.mp4")
+
+  def is_video_file(filepath: str) -> bool:
+      return Path(filepath).suffix.lower() in {'.webm', '.mp4', '.m4p', '.m4v', '.avi', '.avchd', '.ogg', '.mov', '.ogv', '.vob', '.f4v', '.mkv', '.svi', '.m2v', '.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.amv', '.wmv', '.flv', '.mts', '.m2ts', '.ts', '.qt', '.3gp', '.3g2', '.f4p', '.f4a', '.f4b'}
+
+  def get_video_file_path(dirpath: str) -> Union[None, str]:
+      filenames = [f for f in os.listdir(dirpath) if is_video_file(f)]
+      if len(filenames) == 0:
+          return None
+      assert len(filenames) == 1
+      filepath = os.path.join(dirpath, filenames[0])
+      return filepath
