@@ -34,3 +34,9 @@ class Events:
         event_files = sorted(glob.glob(join(folder, "*")))
         events = np.concatenate([load_events(f) for f in event_files], 0)
         return cls(shape=shape, events=events)
+
+    @classmethod
+    def from_file(cls, file, shape):
+        events = load_events(file)
+        print(f"Loaded events from {file}, found {len(events)} events with shape {events.shape}")
+        return cls(shape=shape, events=events)
