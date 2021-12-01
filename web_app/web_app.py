@@ -162,3 +162,23 @@ if add_selectbox == "Offline Video Generator":
           h5f.create_dataset('{}/y'.format(ev_group), data=data['y'], compression=filter_id, compression_opts=compression_opts, chunks=True)
           btn = st.download_button(label="Download Events", data=h5f, file_name="events.h5")
       st.write("Completed")
+
+  # (add the njit decorator here)
+  def event_processor(event_data: dict, output_frame):
+    for x,y,t,p in subevents.items():
+      if p == 1: #positive events
+        output_frame[x,y,0] = 255
+        output_frame[x,y,1] = 0
+        output_frame[x,y,2] = 0
+      elif p == -1: #negative events
+        output_frame[x,y,0] = 0
+        output_frame[x,y,1] = 0
+        output_frame[x,y,2] = 255
+      else:
+        continue
+    return output_frame
+
+  def print_inventory(dct):
+      print("Items held:")
+      for item, amount in dct.items():  # dct.iteritems() in Python 2
+          print("{} ({})".format(item, amount))
