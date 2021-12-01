@@ -241,8 +241,8 @@ if add_selectbox == "Offline Video Generator":
       "contrast_threshold_negative": float(ct_n),
       "contrast_threshold_positive": float(ct_p),
       "refractory_period_ns": 0,
-      "input_dir": "new_data/upsampled/",
-      "output_dir": "new_data/events/"
+      "input_dir": "data/upsampled/",
+      "output_dir": "data/events/"
   }
 
 
@@ -254,7 +254,7 @@ if add_selectbox == "Offline Video Generator":
         #read the video file
         #video_object = VideoSequence(video_file.getvalue())
         #saving the uploaded file on the server
-        save_path = "new_data/original/video_upload/"
+        save_path = "data/original/video_upload/"
         completeName = os.path.join(save_path, video_file.name)
         with open(completeName, "wb") as file:
           file.write(video_file.getvalue())
@@ -263,7 +263,7 @@ if add_selectbox == "Offline Video Generator":
       #Step 2:
       if upsampling:
         print("inside upsampling")
-        os.system("python upsampling/upsample.py --input_dir=new_data/original/ --output_dir=new_data/upsampled --device=cuda:0")
+        os.system("python ../upsampling/upsample.py --input_dir=data/original/ --output_dir=data/upsampled --device=cuda:0")
 
       #Step 3: Event Generation
       process_dir(args["output_dir"], args["input_dir"], args)
