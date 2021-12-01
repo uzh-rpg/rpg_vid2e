@@ -238,8 +238,8 @@ if add_selectbox == "Offline Video Generator":
       
 
   args = {
-      "contrast_threshold_negative": 0.2,
-      "contrast_threshold_positive": 0.2,
+      "contrast_threshold_negative": float(ct_n),
+      "contrast_threshold_positive": float(ct_p),
       "refractory_period_ns": 0,
       "input_dir": "new_data/upsampled/",
       "output_dir": "new_data/events/"
@@ -277,7 +277,8 @@ if add_selectbox == "Offline Video Generator":
 
 
 elif add_selectbox == "Live Webcam":
-
+  st.title("ESIM Web App Playground")
+# st.markdown(':camera::movie_camera::camera::movie_camera::camera::movie_camera::camera::movie_camera::camera::movie_camera:')
   st.sidebar.subheader('ESIM Settings')
   ct_options = ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0', '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '2.0']
   st.sidebar.subheader('Positive Contrast Threshold')
@@ -289,7 +290,7 @@ elif add_selectbox == "Live Webcam":
   window_size = st.sidebar.select_slider("Choose the window size or number of frames for event generation", options=window_size_options)
 
 
-  esim = EventSimulator_torch(0.5, 0.5, 0)
+  esim = EventSimulator_torch(float(ct_n), float(ct_p), 0)
   FRAME_WINDOW = st.image([])
   cam = cv2.VideoCapture(0)
   
@@ -324,8 +325,8 @@ elif add_selectbox == "Live Webcam":
         # timestamps_ns.append(timestamps_ns_new)
         timestamps_ns.append(timestamps_ns_new)
 
-        print(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
-        print(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        # print(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+        # print(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         frame_count += 1
 
@@ -341,7 +342,7 @@ elif add_selectbox == "Live Webcam":
       generated_events = np.stack([generated_events['x'], generated_events['y'], generated_events['t'], generated_events['p']], -1)
       generated_events = Events((int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))), generated_events)
       event_rendering = generated_events.render()
-      print(event_rendering.shape)
+    # print(event_rendering.shape)
       FRAME_WINDOW.image(event_rendering)
 
       frame_count = 0
