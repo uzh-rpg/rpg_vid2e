@@ -56,3 +56,6 @@ class Events:
     @property
     def t(self):
         return self.events[:, 2]
+
+    def downsample(self, n):
+        return Events(self.shape, self.events[::n])
