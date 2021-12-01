@@ -69,3 +69,49 @@ if add_selectbox == "Offline Video Generator":
 
     def __len__(self):
       raise NotImplementedError
+
+  class VideoSequence(Sequence):
+    def __init__(self, video_filepath: str, fps: float=None):
+      #super().__init__()
+      self.metadata = skvideo.io.ffprobe(os.path.abspath(video_filepath))
+      st.write(video_filepath)
+      #st.write(type(metadata))
+      #st.write(metadata.keys)
+      self.fps = fps
+      if self.fps is None:
+        self.fps = float(Fraction(self.metadata['video']['@avg_frame_rate']))
+        assert self.fps > 0, 'Could not retrieve fps from video metadata. fps: {}'.format(self.fps)
+        #print('Using video metadata: Got fps of {} frames/sec'.format(self.fps))
+
+      # Length is number of frames - 1 (because we return pairs).
+      self.len = int(self.metadata['video']['@nb_frames']) - 1
+      self.videogen = skvideo.io.vreader(os.path.abspath(video_filepath))
+      self.last_frame = None
+
+    def __next__(self):
+      for idx, frame in enumerate(self.videogen):
+        #h_orig, w_orig, _ = frame.shape
+        #w, h = w_orig//32*32, h_orig//32*32
+
+        #left = (w_orig - w)//2
+        #upper = (h_orig - h)//2
+        #right = left + w
+        #lower = upper + h
+        #frame = frame[upper:lower, left:right]
+        #assert frame.shape[:2] == (h, w)
+        #frame = self.transform(frame)
+
+        if self.last_frame is None:
+          self.last_frame = frame
+          continue
+        #last_frame_copy = self.last_frame.detach().clone()
+        self.last_frame = frame
+        #imgs = [last_frame_copy, frame]
+        #times_sec = [(idx - 1)/self.fps, idx/self.fps]
+        img = frame
+        time_sec = idx/self.fps
+        #yield imgs, times_sec
+        yield img, time_sec
+
+    def __len__(self):
+      return self.len
