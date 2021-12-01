@@ -55,3 +55,17 @@ if add_selectbox == "Offline Video Generator":
   st.subheader('Output Format')
   format_name = ['HDF5', 'NPZ', 'Rendered Video']
   format = st.radio('Select the output format for the generated events', format_name)
+
+  class Sequence:
+    #def __init__(self):
+      #normalize = transforms.Normalize(mean=mean, std=std)
+      #self.transform = transforms.Compose([transforms.ToTensor(), normalize])
+
+    def __iter__(self):
+      return self
+
+    def __next__(self):
+      raise NotImplementedError
+
+    def __len__(self):
+      raise NotImplementedError
