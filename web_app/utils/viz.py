@@ -26,3 +26,8 @@ class Visualizer:
 
 
         self.print_help()
+
+    def update_indices(self, events, window_size_ms, framerate):
+        self.t0_us, self.t1_us = self.compute_event_window_limits(events, window_size_ms, framerate)
+        self.t0_index = events.compute_index(self.t0_us)
+        self.t1_index = events.compute_index(self.t1_us)
