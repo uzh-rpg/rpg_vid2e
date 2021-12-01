@@ -182,3 +182,65 @@ if add_selectbox == "Offline Video Generator":
       print("Items held:")
       for item, amount in dct.items():  # dct.iteritems() in Python 2
           print("{} ({})".format(item, amount))
+
+  def process_dir(outdir, indir, args):
+      print(f"Processing folder {indir}... Generating events in {outdir}")
+      os.makedirs(outdir, exist_ok=True)
+
+      # constructor
+      esim = EventSimulator_torch(args["contrast_threshold_negative"],
+                                            args["contrast_threshold_positive"],
+                                            args["refractory_period_ns"])
+
+      timestamps = np.genfromtxt(os.path.join(indir, "video_upload/timestamps.txt"), dtype="float64")
+      timestamps_ns = (timestamps * 1e9).astype("int64")
+      timestamps_ns = torch.from_numpy(timestamps_ns).cuda()
+
+      image_files = sorted(glob.glob(os.path.join(indir, "video_upload/imgs", "*.png")))
+      
+      # pbar = tqdm.tqdm(total=len(image_files)-1)
+      # num_events = 0
+
+      # counter = 0
+      # for image_file, timestamp_ns in zip(image_files, timestamps_ns):
+      #     image = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
+      #     log_image = np.log(image.astype("float32") / 255 + 1e-5)
+      #     log_image = torch.from_numpy(log_image).cuda()
+
+      #     sub_events = esim.forward(log_image, timestamp_ns)
+
+      #     # for the first image, no events are generated, so this needs to be skipped
+      #     if sub_events is None:
+      #         continue
+
+      #     sub_events = {k: v.cpu() for k, v in sub_events.items()}    
+      #     num_events += len(sub_events['t'])
+  
+      #     # do something with the events
+      #     np.savez(os.path.join(outdir, "%010d.npz" % counter), **sub_events)
+      #     pbar.set_description(f"Num events generated: {num_events}")
+      #     pbar.update(1)
+      #     counter += 1
+
+      images = np.stack([cv2.imread(f, cv2.IMREAD_GRAYSCALE) for f in image_files])
+      log_images = np.log(images.astype("float32") / 255 + 1e-4)
+      log_images = torch.from_numpy(log_images).cuda()
+      
+      # generate events with GPU support
+      print("Generating events")
+      generated_events = esim.forward(log_images, timestamps_ns)
+      #events = esim.forward(log_image, timestamp_ns)
+      #print_inventory(generated_events)
+      generated_events = {k: v.cpu() for k, v in generated_events.items()}
+      print_inventory(generated_events)
+      #save_to_h5(args["output_dir"], generated_events)
+      save_to_npz(args["output_dir"], generated_events)
+      
+
+  args = {
+      "contrast_threshold_negative": 0.2,
+      "contrast_threshold_positive": 0.2,
+      "refractory_period_ns": 0,
+      "input_dir": "new_data/upsampled/",
+      "output_dir": "new_data/events/"
+  }
