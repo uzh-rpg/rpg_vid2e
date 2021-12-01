@@ -128,3 +128,7 @@ if add_selectbox == "Offline Video Generator":
       assert len(filenames) == 1
       filepath = os.path.join(dirpath, filenames[0])
       return filepath
+
+  def save_to_npz(target_path,  data: dict):
+    assert os.path.exists(target_path)
+    np.savez(os.path.join(target_path, "events.npz"), **data)
