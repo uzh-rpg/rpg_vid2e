@@ -9,6 +9,7 @@ import skvideo.io
 import os
 import numba
 import cv2
+import tqdm
 from fractions import Fraction
 from typing import Union
 from pathlib import Path
@@ -131,51 +132,52 @@ if add_selectbox == "Offline Video Generator":
 
   def save_to_npz(target_path,  data: dict):
     assert os.path.exists(target_path)
-    np.savez(os.path.join(target_path, "events.npz"), **data)
+    path = os.path.join(target_path, "events.npz")
+    np.savez(path, **data)
+    return path
+
+  def save_to_video(target_path, shape, data: dict):
+      # just convert to 30 fps, non-overlapping windows
+      fps = 30
+      tmin, tmax = data['t'][[0,-1]]
+      t0 = np.arange(tmin, tmax, 1e6/fps)
+      t1, t0 = t0[1:], t0[:-1]
+      idx0 = np.searchsorted(data['t'], t0)
+      idx1 = np.searchsorted(data['t'], t1)
+
+      path = os.path.join(target_path, "outputvideo.mp4")
+      writer = skvideo.io.FFmpegWriter(path)
+
+      red = np.array([255, 0, 0], dtype="uint8")
+      blue = np.array([0,0,255], dtype="uint8")
+
+      pbar = tqdm.tqdm(total=len(idx0))
+      for i0, i1 in zip(idx0, idx1):
+        sub_data = {k: v[i0:i1].cpu().numpy().astype("int32") for k, v in data.items()}
+        frame = np.full(shape=shape + (3,), fill_value=255, dtype="uint8")
+        event_processor(sub_data['x'], sub_data['y'], sub_data['p'], red, blue, frame)  
+        writer.writeFrame(frame)
+        pbar.update(1)
+      writer.close()
+
+      return path
 
   def save_to_h5(target_path, data: dict):
       assert os.path.exists(target_path)
+      path = str(target_path+"events.h5")
+      with h5py.File(path, 'w') as h5f:
+          for k, v in data.items():
+            h5f.create_dataset(k, data=v)
+      return path
 
-      filter_id = 32001  # Blosc
-
-      compression_level = 1  # {0, ..., 9}
-      shuffle = 2  # {0: none, 1: byte, 2: bit}
-      # From https://github.com/Blosc/c-blosc/blob/7435f28dd08606bd51ab42b49b0e654547becac4/blosc/blosc.h#L66-L71
-      # define BLOSC_BLOSCLZ   0
-      # define BLOSC_LZ4       1
-      # define BLOSC_LZ4HC     2
-      # define BLOSC_SNAPPY    3
-      # define BLOSC_ZLIB      4
-      # define BLOSC_ZSTD      5
-      compressor_type = 5
-      compression_opts = (0, 0, 0, 0, compression_level, shuffle, compressor_type)
-
-      with h5py.File(str(target_path+"events.h5"), 'w') as h5f:
-          ev_group = 'events'
-          #h5f.create_dataset('{}/p'.format(ev_group), data=data['events'][:, 3], compression=filter_id, compression_opts=compression_opts, chunks=True)
-          h5f.create_dataset('{}/p'.format(ev_group), data=data['p'], compression=filter_id, compression_opts=compression_opts, chunks=True)
-          #h5f.create_dataset('{}/t'.format(ev_group), data=data['events'][:, 2], compression=filter_id, compression_opts=compression_opts, chunks=True)
-          h5f.create_dataset('{}/t'.format(ev_group), data=data['t'], compression=filter_id, compression_opts=compression_opts, chunks=True)
-          #h5f.create_dataset('{}/x'.format(ev_group), data=data['events'][:, 0], compression=filter_id, compression_opts=compression_opts, chunks=True)
-          h5f.create_dataset('{}/x'.format(ev_group), data=data['x'], compression=filter_id, compression_opts=compression_opts, chunks=True)
-          #h5f.create_dataset('{}/y'.format(ev_group), data=data['events'][:, 1], compression=filter_id, compression_opts=compression_opts, chunks=True)
-          h5f.create_dataset('{}/y'.format(ev_group), data=data['y'], compression=filter_id, compression_opts=compression_opts, chunks=True)
-          btn = st.download_button(label="Download Events", data=h5f, file_name="events.h5")
-      st.write("Completed")
-
-  # (add the njit decorator here)
-  def event_processor(event_data: dict, output_frame):
-    for x,y,t,p in subevents.items():
-      if p == 1: #positive events
-        output_frame[x,y,0] = 255
-        output_frame[x,y,1] = 0
-        output_frame[x,y,2] = 0
-      elif p == -1: #negative events
-        output_frame[x,y,0] = 0
-        output_frame[x,y,1] = 0
-        output_frame[x,y,2] = 255
-      else:
-        continue
+  @numba.jit(nopython=True)
+  def event_processor(x, y, p, red, blue, output_frame):
+    for x_,y_,p_ in zip(x, y, p):
+        if p_ == 1:
+          output_frame[y_,x_] = blue
+        else:
+          output_frame[y_,x_] = red
+          
     return output_frame
 
   def print_inventory(dct):
@@ -223,6 +225,9 @@ if add_selectbox == "Offline Video Generator":
       #     counter += 1
 
       images = np.stack([cv2.imread(f, cv2.IMREAD_GRAYSCALE) for f in image_files])
+
+      shape = images.shape[1:]
+
       log_images = np.log(images.astype("float32") / 255 + 1e-4)
       log_images = torch.from_numpy(log_images).cuda()
       
@@ -232,9 +237,18 @@ if add_selectbox == "Offline Video Generator":
       #events = esim.forward(log_image, timestamp_ns)
       #print_inventory(generated_events)
       generated_events = {k: v.cpu() for k, v in generated_events.items()}
+      generated_events['t'] = (generated_events['t'] / 1e3).long()
       print_inventory(generated_events)
-      #save_to_h5(args["output_dir"], generated_events)
-      save_to_npz(args["output_dir"], generated_events)
+
+      if args['format'] == "HDF5":
+          return save_to_h5(args["output_dir"], generated_events)
+      elif args['format'] == "NPZ":
+          return save_to_npz(args["output_dir"], generated_events)
+      elif args['format'] == "Rendered Video":
+          return save_to_video(args["output_dir"], shape, generated_events)
+      else:
+          raise ValueError
+
       
 
   args = {
@@ -242,7 +256,8 @@ if add_selectbox == "Offline Video Generator":
       "contrast_threshold_positive": float(ct_p),
       "refractory_period_ns": 0,
       "input_dir": "data/upsampled/",
-      "output_dir": "data/events/"
+      "output_dir": "data/events/",
+      "format": format
   }
 
 
@@ -266,11 +281,11 @@ if add_selectbox == "Offline Video Generator":
         os.system("python ../upsampling/upsample.py --input_dir=data/original/ --output_dir=data/upsampled --device=cuda:0")
 
       #Step 3: Event Generation
-      process_dir(args["output_dir"], args["input_dir"], args)
+      file_path = process_dir(args["output_dir"], args["input_dir"], args)
 
       #Step 4: Download Option
-      with open(os.path.join(args["output_dir"], "events.npz"), "rb") as file:
-        btn = st.download_button(label="Download Events", data=file, file_name="events.npz")
+      with open(file_path, "rb") as file:
+        btn = st.download_button(label="Download Events", data=file, file_name=os.path.basename(file_path))
         if btn:
           st.markdown(':beer::beer::beer::beer::beer::beer::beer::beer::beer::beer::beer:')
 
