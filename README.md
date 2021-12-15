@@ -23,8 +23,12 @@ If you use this code in an academic context, please cite the following work:
 }
 ```
 ## News
-We now also release new python bindings for esim with GPU support.
+* We release a web app and interactive demo which generates events and converts your webcam to events. Try it out [here](web_app/README.md).
+* We now also release new python bindings for esim with GPU support.
 Details are [here](esim_torch/README.md)
+
+## Web App and Interactive Demo
+Try out our the interactive demo and webcam support [here](web_app/README.md). 
 
 ## Dataset
 The synthetic N-Caltech101 dataset, as well as video sequences used for event conversion can be found [here](http://rpg.ifi.uzh.ch/data/VID2E/ncaltech_syn_images.zip). For each sample of each class it contains events in the form `class/image_%04d.npz` and images in the form `class/image_%05d/images/image_%05d.png`, as well as the corresponding timestamps of the images in `class/image_%04d/timestamps.txt`.
