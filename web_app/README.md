@@ -139,9 +139,9 @@ Make sure that you have followed the [Instalation with Anaconda Instruction](htt
   esim-py                   0.0.1                    pypi_0    pypi
   ```
 
-2. Install the `streamlit` package in this Conda environment
+2. Install the `streamlit` package in this Conda environment, along with a couple of additional packages.
 ```sh
-pip install streamlit
+pip install streamlit stqdm numba h5py
 ```
 ### Running the Web App Locally
 
@@ -152,13 +152,13 @@ streamlit run web_app.py
 ```
 2. Then you can access the app in Local URL: http://localhost:8501
 
-_When using the 'vide upload' feature, the uploaded file would be saved in the 'data/original/video_upload' directory. Subsequently, upon clicking the 'Generate Events' button, two new directory, namely, 'data/upsampled/video_upload' and 'data/events/video_upload' would be created. Additionally, after the process has completed, you will see a 'Download Events' button, you can click this button to download the events._
+_When using the 'video upload' feature, the uploaded file is saved in the 'data/original/video_upload' directory. Subsequently, upon clicking the 'Generate Events' button, two new directory, namely, 'data/upsampled/video_upload' and 'data/events/video_upload' are created. Additionally, after the process has finished, you will see a 'Download Events' button, you can click this button to download the events. Events can be downloaded in three different formats: as .h5 file, as .npz or as a rendered video._
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Running the Web App on Google Colab
 
-You can also run this web app on Google Colab then follow these steps in order.
+To run this web app on Google Colab follow these steps in order.
 
 _Make sure you select the `Run time type` as `GPU` in `Google Colab`_
 
