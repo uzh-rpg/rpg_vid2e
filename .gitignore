@@ -1,3 +1,9 @@
+example/
+pretrained_models/
+esim_py/build/
+esim_py/*.egg*
+esim_torch/build/
+esim_torch/src/*.egg*
 .vscode/
 *.swp
 *.pyc

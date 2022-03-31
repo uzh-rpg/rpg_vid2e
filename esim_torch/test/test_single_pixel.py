@@ -1,10 +1,9 @@
 import torch
 import matplotlib.pyplot as plt
 import numpy as np
-import glob
-import cv2
 
-from esim_torch import EventSimulator_torch
+import esim_torch
+
 
 def increasing_sin_wave(t):
     return (400 * np.sin((t-t[0])*20*np.pi)*(t-t[0])+150).astype("uint8").reshape((-1,1,1))
@@ -12,9 +11,9 @@ def increasing_sin_wave(t):
 if __name__ == "__main__":
     c = 0.2
     refractory_period_ns = 5e6
-    esim_torch = EventSimulator_torch(contrast_threshold_neg=c,
-                                      contrast_threshold_pos=c,
-                                      refractory_period_ns=refractory_period_ns)
+    esim = esim_torch.ESIM(contrast_threshold_neg=c,
+                           contrast_threshold_pos=c,
+                           refractory_period_ns=refractory_period_ns)
 
     print("Loading images")
     timestamps_s = np.genfromtxt("../esim_py/tests/data/images/timestamps.txt")
@@ -30,7 +29,7 @@ if __name__ == "__main__":
 
     # generate events with GPU support
     print("Generating events")
-    events = esim_torch.forward(log_images, timestamps_ns)
+    events = esim.forward(log_images, timestamps_ns)
 
     # render events
     image = images[0]

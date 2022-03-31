@@ -4,13 +4,13 @@ import numpy as np
 import glob
 import cv2
 
-from esim_torch import EventSimulator_torch
+import esim_torch
 
 
 if __name__ == "__main__":
-    esim_torch = EventSimulator_torch(contrast_threshold_neg=0.2,
-                                      contrast_threshold_pos=0.2,
-                                      refractory_period_ns=0)
+    esim = esim_torch.ESIM(contrast_threshold_neg=0.2,
+                           contrast_threshold_pos=0.2,
+                           refractory_period_ns=0)
 
     print("Loading images")
     image_files = sorted(glob.glob("../esim_py/tests/data/images/images/*.png"))
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     # generate events with GPU support
     print("Generating events")
-    events = esim_torch.forward(log_images, timestamps_ns)
+    events = esim.forward(log_images, timestamps_ns)
 
     # render events 
     image = images[0]
