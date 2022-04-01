@@ -23,6 +23,7 @@ If you use this code in an academic context, please cite the following work:
 }
 ```
 ## News
+* We now support frame interpolation done by [FILM](https://github.com/google-research/frame-interpolation).
 * We release a web app and interactive demo which generates events and converts your webcam to events. Try it out [here](web_app/README.md).
 * We now also release new python bindings for esim with GPU support.
 Details are [here](esim_torch/README.md)
@@ -43,7 +44,9 @@ git clone git@github.com:uzh-rpg/rpg_vid2e.git --recursive
 ## Installation
 First download the [FILM](https://github.com/google-research/frame-interpolation) checkpoint, and move it to the current root
 ```bash
-    mv path/to/pretrained_models rpg_vid2e/
+    wget https://rpg.ifi.uzh.ch/data/VID2E/pretrained_models.zip -O /tmp/temp.zip
+    unzip /tmp/temp.zip -d rpg_vid2e/
+    rm -rf /tmp/temp.zip
 ```
 
 make sure to install the following
