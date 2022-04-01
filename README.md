@@ -23,6 +23,7 @@ If you use this code in an academic context, please cite the following work:
 }
 ```
 ## News
+* We now support frame interpolation done by [FILM](https://github.com/google-research/frame-interpolation).
 * We release a web app and interactive demo which generates events and converts your webcam to events. Try it out [here](web_app/README.md).
 * We now also release new python bindings for esim with GPU support.
 Details are [here](esim_torch/README.md)
@@ -40,25 +41,37 @@ Clone the repo *recursively with submodules*
 git clone git@github.com:uzh-rpg/rpg_vid2e.git --recursive
 ```
 
-## Installation with [Anaconda](https://www.anaconda.com/distribution/)
+## Installation
+First download the [FILM](https://github.com/google-research/frame-interpolation) checkpoint, and move it to the current root
+```bash
+    wget https://rpg.ifi.uzh.ch/data/VID2E/pretrained_models.zip -O /tmp/temp.zip
+    unzip /tmp/temp.zip -d rpg_vid2e/
+    rm -rf /tmp/temp.zip
+```
+
+make sure to install the following
+    * [Anaconda Python 3.9](https://www.anaconda.com/products/individual)
+    * [CUDA Toolkit 11.2.1](https://developer.nvidia.com/cuda-11.2.1-download-archive)
+    * [cuDNN 8.1.0](https://developer.nvidia.com/rdp/cudnn-download)
 
 ```bash
-conda config --add channels pytorch
-conda config --append channels conda-forge
-conda create --name vid2e --file requirements.txt
+conda create --name vid2e python=3.9
+conda activate vid2e
+pip install rpg_vid2e/requirements.txt
 conda install -y -c conda-forge pybind11 matplotlib
+conda install -y pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
 ```
 
 Build the python bindings for ESIM
 
 ```bash
-pip install esim_py/
+pip install rpg_vid2e/esim_py/
 ```
 
 Build the python bindings with GPU support with 
 
 ```bash
-pip install esim_torch/
+pip install rpg_vid2e/esim_torch/
 ```
 
 ## Adaptive Upsampling

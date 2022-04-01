@@ -2,11 +2,12 @@ from setuptools import setup
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension
 
 setup(
-    name='esim_cuda',
+    name='esim_torch',
+    package_dir={'':'src'},
     ext_modules=[
         CUDAExtension(name='esim_cuda',
                       sources=[
-                      'esim_cuda_kernel.cu',
+                      'src/esim_torch/esim_cuda_kernel.cu',
                       ],
                      # extra_compile_args={
                      #'cxx': ['-g'],

@@ -4,8 +4,8 @@
 You can use our example directory to experiment
 ```bash
 device=cpu
-# device=cuda:0
-python upsample.py --input_dir=../example/original --output_dir=../example/upsampled --device=$device
+# device=0
+CUDA_VISIBLE_DEVICES=$device python upsample.py --input_dir=../example/original --output_dir=../example/upsampled
 
 ```
 The **expected input structure** is as follows:

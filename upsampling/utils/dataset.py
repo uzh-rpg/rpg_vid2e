@@ -5,16 +5,14 @@ from typing import Union
 from fractions import Fraction
 from PIL import Image
 import skvideo.io
-import torch
-import torchvision.transforms as transforms
+import numpy as np
 
 from .const import mean, std, img_formats
 
 
 class Sequence:
     def __init__(self):
-        normalize = transforms.Normalize(mean=mean, std=std)
-        self.transform = transforms.Compose([transforms.ToTensor(), normalize])
+        pass
 
     def __iter__(self):
         return self
@@ -45,11 +43,7 @@ class ImageSequence(Sequence):
     def __next__(self):
         for idx in range(0, len(self.file_names) - 1):
             file_paths = self._get_path_from_name([self.file_names[idx], self.file_names[idx + 1]])
-            imgs = list()
-            for file_path in file_paths:
-                img = self._pil_loader(file_path)
-                img = self.transform(img)
-                imgs.append(img)
+            imgs = [self._pil_loader(f) for f in file_paths]
             times_sec = [idx/self.fps, (idx + 1)/self.fps]
             yield imgs, times_sec
 
@@ -70,7 +64,7 @@ class ImageSequence(Sequence):
             right = left + w
             lower = upper + h
             img = img.crop((left, upper, right, lower))
-            return img
+            return np.array(img).astype("float32") / 255
 
     def _get_path_from_name(self, file_names: Union[list, str]) -> Union[list, str]:
         if isinstance(file_names, list):
@@ -102,14 +96,14 @@ class VideoSequence(Sequence):
             upper = (h_orig - h)//2
             right = left + w
             lower = upper + h
-            frame = frame[upper:lower, left:right]
+            frame = frame[upper:lower, left:right].astype("float32") / 255
             assert frame.shape[:2] == (h, w)
-            frame = self.transform(frame)
 
             if self.last_frame is None:
                 self.last_frame = frame
                 continue
-            last_frame_copy = self.last_frame.detach().clone()
+
+            last_frame_copy = self.last_frame.copy()
             self.last_frame = frame
             imgs = [last_frame_copy, frame]
             times_sec = [(idx - 1)/self.fps, idx/self.fps]

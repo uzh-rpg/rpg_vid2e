@@ -15,7 +15,7 @@ The currently supported functions are listed in the example below:
 import esim_torch
 
 # constructor
-esim = esim_torch.EventSimulator_torch(
+esim = esim_torch.ESIM(
     contrast_threshold_neg,  # contrast threshold for negative events
     contrast_threshold_pos,  # contrast threshold for positive events
     refractory_period_ns     # refractory period in nanoseconds
