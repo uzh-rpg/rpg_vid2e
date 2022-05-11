@@ -57,7 +57,7 @@ make sure to install the following
 ```bash
 conda create --name vid2e python=3.9
 conda activate vid2e
-pip install rpg_vid2e/requirements.txt
+pip install -r rpg_vid2e/requirements.txt
 conda install -y -c conda-forge pybind11 matplotlib
 conda install -y pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
 ```
