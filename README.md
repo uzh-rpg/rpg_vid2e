@@ -11,7 +11,7 @@ video to events conversion as described in Gehrig et al. CVPR'20 and the used da
 
 If you use this code in an academic context, please cite the following work:
 
-[Daniel Gehrig](https://danielgehrig18.github.io/), [Mathias Gehrig](https://magehrig.github.io/), Javier Hidalgo-Carrió, [Davide Scaramuzza](http://rpg.ifi.uzh.ch/people_scaramuzza.html), "Video to Events: Recycling Video Datasets for Event Cameras", The Conference on Computer Vision and Pattern Recognition (CVPR), 2020
+[Daniel Gehrig](https://danielgehrig18.github.io/), [Mathias Gehrig](https://magehrig.github.io/), [Javier Hidalgo-Carrió](https://jhidalgocarrio.github.io/), [Davide Scaramuzza](http://rpg.ifi.uzh.ch/people_scaramuzza.html), "Video to Events: Recycling Video Datasets for Event Cameras", The Conference on Computer Vision and Pattern Recognition (CVPR), 2020
 
 ```bibtex
 @InProceedings{Gehrig_2020_CVPR,
