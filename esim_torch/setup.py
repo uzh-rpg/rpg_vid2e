@@ -4,6 +4,7 @@ from torch.utils.cpp_extension import BuildExtension, CUDAExtension
 setup(
     name='esim_torch',
     package_dir={'':'src'},
+    packages=['esim_torch'],
     ext_modules=[
         CUDAExtension(name='esim_cuda',
                       sources=[
