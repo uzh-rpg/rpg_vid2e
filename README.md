@@ -95,7 +95,7 @@ To run an example, first upsample the example videos
 ```bash
 device=cpu
 # device=cuda:0
-python upsampling/upsample.py --input_dir=example/original --output_dir=example/upsampled --device=$device
+python upsampling/upsample.py --input_dir=example/original --output_dir=example/upsampled
 
 ```
 This will generate upsampling/upsampled with in the `example/upsampled` folder. To generate events, use
