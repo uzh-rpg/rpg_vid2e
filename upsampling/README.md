@@ -1,5 +1,12 @@
 # Adaptive Upsampling
 
+## Installation
+First install the standalone package for upsampling 
+
+```bash
+    pip install .
+```
+
 ## Generate Upsampled Video or Image Sequences
 You can use our example directory to experiment
 ```bash
