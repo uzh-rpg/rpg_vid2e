@@ -5,7 +5,7 @@ from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
 
-from utils import BatchUpsampler
+from upsampler import BatchUpsampler
 
 
 def get_flags():
