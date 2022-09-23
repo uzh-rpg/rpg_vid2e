@@ -27,6 +27,8 @@ class Sequence:
 class ImageSequence(Sequence):
     def __init__(self, imgs_dirpath: str, fps: float):
         super().__init__()
+        self.src_dir = os.path.dirname(imgs_dirpath)
+        self.dest_dir = self.src_dir
         self.fps = fps
 
         assert os.path.isdir(imgs_dirpath)
@@ -75,6 +77,9 @@ class ImageSequence(Sequence):
 class VideoSequence(Sequence):
     def __init__(self, video_filepath: str, fps: float=None):
         super().__init__()
+        self.src_dir = os.path.dirname(video_filepath)
+        self.dest_dir = os.path.join(self.src_dir, os.path.basename(video_filepath).split('.')[0])
+
         metadata = skvideo.io.ffprobe(os.path.abspath(video_filepath))
         self.fps = fps
         if self.fps is None:

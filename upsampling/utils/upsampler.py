@@ -4,9 +4,10 @@ import shutil
 import cv2
 import numpy as np
 from tqdm import tqdm
+from pathlib import Path
 
-from . import Sequence
-from .const import imgs_dirname
+from . import Sequence, VideoSequence, ImageSequence
+from .const import imgs_dirname, video_formats, fps_filename
 from .interpolator import Interpolator
 from .utils import get_sequence_or_none
 
@@ -27,16 +28,34 @@ class Upsampler:
 
     def upsample(self):
         sequence_counter = 0
-        for src_absdirpath, dirnames, filenames in os.walk(self.src_dir):
-            sequence = get_sequence_or_none(src_absdirpath)
-            if sequence is None:
-                continue
+        sequences = self.find_sequences_recursive(self.src_dir)
+        for sequence in sequences:
             sequence_counter += 1
-            print('Processing sequence number {}'.format(src_absdirpath))
-            reldirpath = os.path.relpath(src_absdirpath, self.src_dir)
+            print('Processing sequence number {}'.format(sequence_counter))
+            reldirpath = os.path.relpath(sequence.dest_dir, self.src_dir)
             dest_imgs_dir = os.path.join(self.dest_dir, reldirpath, imgs_dirname)
+            os.makedirs(dest_imgs_dir, exist_ok=True)
             dest_timestamps_filepath = os.path.join(self.dest_dir, reldirpath, self._timestamps_filename)
             self.upsample_sequence(sequence, dest_imgs_dir, dest_timestamps_filepath)
+
+    def find_sequences_recursive(self, src_dir):
+        src_dir = Path(src_dir)
+        # find all video files
+        sequences = []
+        for video_format in video_formats:
+            video_files = list(src_dir.rglob("*"+video_format))
+            for video_file in video_files:
+                sequence = VideoSequence(str(video_file))
+                sequences.append(sequence)
+
+        # find all fps files, since these should be with images
+        fps_files = list(src_dir.rglob("**/" + fps_filename))
+        for fps_file in fps_files:
+            fps = np.genfromtxt(fps_file)[0]
+            sequence = ImageSequence(str(fps_file.parent), fps)
+            sequences.append(sequence)
+
+        return sequences
 
     def upsample_sequence(self, sequence: Sequence, dest_imgs_dir: str, dest_timestamps_filepath: str):
         os.makedirs(dest_imgs_dir, exist_ok=True)

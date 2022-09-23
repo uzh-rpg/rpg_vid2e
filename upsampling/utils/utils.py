@@ -24,7 +24,7 @@ def get_video_file(dirpath: str) -> Union[None, str]:
     filenames = [f for f in os.listdir(dirpath) if is_video_file(f)]
     if len(filenames) == 0:
         return None
-    assert len(filenames) == 1
+    assert len(filenames) == 1, filenames
     filepath = os.path.join(dirpath, filenames[0])
     return filepath
 
