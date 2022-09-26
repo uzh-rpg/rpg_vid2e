@@ -62,7 +62,7 @@ class Upsampler:
         timestamps_list = list()
 
         idx = 0
-        for img_pair, time_pair in tqdm(next(sequence), total=len(sequence), desc=type(sequence).__name__):
+        for img_pair, time_pair in tqdm(next(sequence), total=len(sequence), desc=sequence.name):
             I0 = img_pair[0][None]
             I1 = img_pair[1][None]
             t0, t1 = time_pair

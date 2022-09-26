@@ -11,8 +11,10 @@ from .const import mean, std, img_formats
 
 
 class Sequence:
-    def __init__(self):
-        pass
+    def __init__(self, name, src_dir, dest_dir):
+        self.name = name
+        self.src_dir = src_dir
+        self.dest_dir = dest_dir
 
     def __iter__(self):
         return self
@@ -26,9 +28,9 @@ class Sequence:
 
 class ImageSequence(Sequence):
     def __init__(self, imgs_dirpath: str, fps: float):
-        super().__init__()
-        self.src_dir = os.path.dirname(imgs_dirpath)
-        self.dest_dir = self.src_dir
+        super().__init__(src_dir=os.path.dirname(imgs_dirpath),
+                         dest_dir=os.path.dirname(imgs_dirpath),
+                         name=os.path.basename(imgs_dirpath))
         self.fps = fps
 
         assert os.path.isdir(imgs_dirpath)
@@ -76,10 +78,11 @@ class ImageSequence(Sequence):
 
 class VideoSequence(Sequence):
     def __init__(self, video_filepath: str, fps: float=None):
-        super().__init__()
-        self.src_dir = os.path.dirname(video_filepath)
-        self.dest_dir = os.path.join(self.src_dir, os.path.basename(video_filepath).split('.')[0])
-
+        src_dir = os.path.dirname(video_filepath)
+        name = os.path.basename(video_filepath).split('.')[0]
+        super().__init__(src_dir=src_dir,
+                         dest_dir=os.path.join(src_dir, name),
+                         name=name)
         metadata = skvideo.io.ffprobe(os.path.abspath(video_filepath))
         self.fps = fps
         if self.fps is None:
