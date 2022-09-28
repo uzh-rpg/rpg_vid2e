@@ -7,6 +7,8 @@ import glob
 import cv2
 import tqdm
 import torch
+import evlicious
+from pathlib import Path
 
 
 def is_valid_dir(subdirs, files):
@@ -18,9 +20,9 @@ def process_dir(outdir, indir, args):
     os.makedirs(outdir, exist_ok=True)
 
     # constructor
-    esim = esim_torch.EventSimulator_torch(args.contrast_threshold_negative,
-                                           args.contrast_threshold_positive,
-                                           args.refractory_period_ns)
+    esim = esim_torch.ESIM(args.contrast_threshold_negative,
+                           args.contrast_threshold_positive,
+                           args.refractory_period_ns)
 
     timestamps = np.genfromtxt(os.path.join(indir, "timestamps.txt"), dtype="float64")
     timestamps_ns = (timestamps * 1e9).astype("int64")
@@ -31,26 +33,28 @@ def process_dir(outdir, indir, args):
     pbar = tqdm.tqdm(total=len(image_files)-1)
     num_events = 0
 
-    counter = 0
+    writer = evlicious.io.H5Writer(Path(outdir) / "events.h5")
     for image_file, timestamp_ns in zip(image_files, timestamps_ns):
         image = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
         log_image = np.log(image.astype("float32") / 255 + 1e-5)
         log_image = torch.from_numpy(log_image).cuda()
-
         sub_events = esim.forward(log_image, timestamp_ns)
 
         # for the first image, no events are generated, so this needs to be skipped
         if sub_events is None:
             continue
 
-        sub_events = {k: v.cpu() for k, v in sub_events.items()}    
+        sub_events = {k: v.cpu().numpy() for k, v in sub_events.items()}
         num_events += len(sub_events['t'])
- 
+
         # do something with the events
-        np.savez(os.path.join(outdir, "%010d.npz" % counter), **sub_events)
+        sub_events['t'] = sub_events['t'] / 1e3 # conversion from ns to us
+
+        height, width = image.shape
+        events = evlicious.Events.from_dict(sub_events, height=height, width=width)
+        writer.add_data(events)
         pbar.set_description(f"Num events generated: {num_events}")
         pbar.update(1)
-        counter += 1
 
 
 if __name__ == "__main__":
@@ -62,11 +66,8 @@ if __name__ == "__main__":
     parser.add_argument("--output_dir", "-o", default="", required=True)
     args = parser.parse_args()
 
-
     print(f"Generating events with cn={args.contrast_threshold_negative}, cp={args.contrast_threshold_positive} and rp={args.refractory_period_ns}")
-
     for path, subdirs, files in os.walk(args.input_dir):
         if is_valid_dir(subdirs, files):
             output_folder = os.path.join(args.output_dir, os.path.relpath(path, args.input_dir))
-
             process_dir(output_folder, path, args)
