@@ -77,6 +77,9 @@ class Upsampler:
             flow_mag_1_0_max = ((F_1_0 ** 2).sum(-1) ** .5).max()
             num_bisections = int(np.ceil(np.log(max([flow_mag_0_1_max, flow_mag_1_0_max]))/np.log(2)))
 
+            if num_bisections == 0:
+                return [image[0]], [(t0 + t1) / 2]
+
         left_images, left_timestamps = self._upsample_adaptive(I0, image, t0, (t0+t1)/2, num_bisections=num_bisections-1)
         right_images, right_timestamps = self._upsample_adaptive(image, I1, (t0+t1)/2, t1, num_bisections=num_bisections-1)
         timestamps = left_timestamps + [(t0+t1)/2] + right_timestamps
