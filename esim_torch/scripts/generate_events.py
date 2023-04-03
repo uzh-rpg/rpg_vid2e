@@ -18,9 +18,9 @@ def process_dir(outdir, indir, args):
     os.makedirs(outdir, exist_ok=True)
 
     # constructor
-    esim = esim_torch.EventSimulator_torch(args.contrast_threshold_negative,
-                                           args.contrast_threshold_positive,
-                                           args.refractory_period_ns)
+    esim = esim_torch.ESIM(args.contrast_threshold_negative,
+                           args.contrast_threshold_positive,
+                           args.refractory_period_ns)
 
     timestamps = np.genfromtxt(os.path.join(indir, "timestamps.txt"), dtype="float64")
     timestamps_ns = (timestamps * 1e9).astype("int64")
