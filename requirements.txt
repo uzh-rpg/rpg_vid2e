@@ -83,7 +83,7 @@ stack-data==0.2.0
 tensorboard==2.6.0
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.1
-tensorflow==2.6.2
+tensorflow==2.9.3
 tensorflow-addons==0.15.0
 tensorflow-datasets==4.4.0
 tensorflow-estimator==2.6.0
