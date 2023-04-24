@@ -59,7 +59,7 @@ pickleshare==0.7.5
 Pillow==9.0.1
 promise==2.3
 prompt-toolkit==3.0.28
-protobuf==3.19.4
+protobuf==3.19.5
 ptyprocess==0.7.0
 pure-eval==0.2.2
 pyarrow==5.0.0
