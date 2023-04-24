@@ -34,7 +34,7 @@ httplib2==0.19.1
 idna==3.3
 imageio==2.15.0
 importlib-metadata==4.11.3
-ipython==8.2.0
+ipython==8.10.0
 jedi==0.18.1
 keras==2.6.0
 Keras-Preprocessing==1.1.2
