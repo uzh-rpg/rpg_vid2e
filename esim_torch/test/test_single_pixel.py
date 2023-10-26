@@ -18,7 +18,7 @@ if __name__ == "__main__":
     print("Loading images")
     timestamps_s = np.genfromtxt("../esim_py/tests/data/images/timestamps.txt")
     images = increasing_sin_wave(timestamps_s)
-    timestamps_ns = (timestamps_s * 1e9).astype("int64")
+    timestamps_ns = (timestamps_s * 1e6).astype("int64")
     log_images = np.log(images.astype("float32") / 255 + 1e-4)
 
     # generate torch tensors

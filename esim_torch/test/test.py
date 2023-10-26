@@ -16,7 +16,7 @@ if __name__ == "__main__":
     image_files = sorted(glob.glob("../esim_py/tests/data/images/images/*.png"))
     images = np.stack([cv2.imread(f, cv2.IMREAD_GRAYSCALE) for f in image_files])
     timestamps_s = np.genfromtxt("../esim_py/tests/data/images/timestamps.txt")
-    timestamps_ns = (timestamps_s * 1e9).astype("int64")
+    timestamps_ns = (timestamps_s * 1e6).astype("int64")
 
     log_images = np.log(images.astype("float32") / 255 + 1e-4)
 

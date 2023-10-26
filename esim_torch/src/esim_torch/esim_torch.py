@@ -34,7 +34,7 @@ class EventSimulator_torch(torch.nn.Module):
         self._check_inputs(images, timestamps)
 
         if self.initial_reference_values is None:
-            self.initial_reference_values = images[0].clone()
+            self.initial_reference_values = images[0].clone() + (2*torch.rand_like(images[0]) - 1)*(self.contrast_threshold_pos + self.contrast_threshold_neg)/2
             self.timestamps_last_event = torch.zeros_like(self.initial_reference_values).long()
 
         if self.last_image is not None:

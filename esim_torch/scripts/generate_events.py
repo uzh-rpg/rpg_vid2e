@@ -23,7 +23,7 @@ def process_dir(outdir, indir, args):
                            args.refractory_period_ns)
 
     timestamps = np.genfromtxt(os.path.join(indir, "timestamps.txt"), dtype="float64")
-    timestamps_ns = (timestamps * 1e9).astype("int64")
+    timestamps_ns = (timestamps * 1e6).astype("int64")
     timestamps_ns = torch.from_numpy(timestamps_ns).cuda()
 
     image_files = sorted(glob.glob(os.path.join(indir, "imgs", "*.png")))
@@ -34,7 +34,7 @@ def process_dir(outdir, indir, args):
     counter = 0
     for image_file, timestamp_ns in zip(image_files, timestamps_ns):
         image = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
-        log_image = np.log(image.astype("float32") / 255 + 1e-5)
+        log_image = np.log(image.astype("float32") / 255 + args.eps)
         log_image = torch.from_numpy(log_image).cuda()
 
         sub_events = esim.forward(log_image, timestamp_ns)
@@ -57,6 +57,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("""Generate events from a high frequency video stream""")
     parser.add_argument("--contrast_threshold_negative", "-cn", type=float, default=0.2)
     parser.add_argument("--contrast_threshold_positive", "-cp", type=float, default=0.2)
+    parser.add_argument("--eps", "-e", type=float, default=1e-5)
     parser.add_argument("--refractory_period_ns", "-rp", type=int, default=0)
     parser.add_argument("--input_dir", "-i", default="", required=True)
     parser.add_argument("--output_dir", "-o", default="", required=True)
