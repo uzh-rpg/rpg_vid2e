@@ -27,14 +27,22 @@ def process_dir(outdir, indir, args):
     timestamps_ns = torch.from_numpy(timestamps_ns).cuda()
 
     image_files = sorted(glob.glob(os.path.join(indir, "imgs", "*.png")))
-    
+
     pbar = tqdm.tqdm(total=len(image_files)-1)
     num_events = 0
 
     counter = 0
     for image_file, timestamp_ns in zip(image_files, timestamps_ns):
-        image = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
-        log_image = np.log(image.astype("float32") / 255 + args.eps)
+        #image = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
+        image = cv2.imread(image_file, cv2.IMREAD_UNCHANGED)
+        if len(image.shape) > 2:
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        is_8bit = image.dtype == 'uint8'
+        max_val = 2**8-1 if is_8bit else 2**16-1
+
+
+        log_image = np.log(image.astype("float32") / max_val + args.eps)
         log_image = torch.from_numpy(log_image).cuda()
 
         sub_events = esim.forward(log_image, timestamp_ns)
