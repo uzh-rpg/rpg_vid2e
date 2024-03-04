@@ -1,4 +1,4 @@
-# esym\_py
+# esim\_py
 
 This package exposes python bindings for ESIM which can be used within a training loop. 
 To test out if the installation was successful you can run
